@@ -1,0 +1,798 @@
+---
+import ConsultForm from './ConsultForm.astro';
+import { cleanText } from '../lib/utils.js';
+
+const { site = {}, row = {} } = Astro.props;
+
+const name = cleanText(row.caseName || row.mainKeyword || row.slug || '금융사기');
+
+const theme = site?.theme || 'main';
+const accent = site?.colors?.accent || '#1e4b9b';
+const gold = site?.colors?.gold || '#c9a45c';
+const danger = site?.colors?.danger || '#7f1d1d';
+
+const kakao = site?.kakao || 'https://open.kakao.com/o/s9AiNHzi';
+
+const recoveryChecks = [
+  [
+    '01',
+    '자금세탁 이동 경로',
+    '피해금이 어느 계좌로, 어떤 명목으로, 언제 송금됐는지 확인합니다. 대포통장, 가상계좌, 지갑주소로 분산된 자금 흐름을 정리해 법적 조치로 원금 회수 가능성을 높입니다.'
+  ],
+  [
+    '02',
+    '상대방 특정 단서',
+    '담당자 이름, 연락처, 대화방, 사이트 주소, 예금주, 계좌정보를 확인합니다. 상대방을 특정할 단서가 남아 있어야 고소, 가압류, 손해배상 절차를 빠르게 검토할 수 있습니다.'
+  ],
+  [
+    '03',
+    '법적 회수 조치',
+    '지급정지, 고소, 가압류, 손해배상, 합의 가능성을 함께 검토합니다. 단순 신고가 아니라 원금 회수 가능성을 높이는 절차 중심으로 대응합니다.'
+  ]
+];
+
+const proofCards = [
+  [
+    '01',
+    '비식별 합의 진행 사례',
+    '의뢰인 정보와 사건 특정 정보는 제외하고, 입금 흐름과 대응 방향을 기준으로 실제 진행 경험을 설명합니다.'
+  ],
+  [
+    '02',
+    '자료 기준 대응',
+    '입금내역, 대화자료, 사이트 화면, 계좌정보를 기준으로 합의 가능성과 민·형사 절차를 함께 검토합니다.'
+  ],
+  [
+    '03',
+    '원금 회수 가능성 검토',
+    '대포통장, 가상계좌, 지갑주소 등 자금 이동 경로를 확인하고 필요한 법적 조치로 원금 회수 가능성을 높입니다.'
+  ]
+];
+
+const liveCases = [
+  ['서울', '출금 지연 후 세금 요구'],
+  ['부산', '추가 인증비 요구'],
+  ['인천', '담당자 연락두절'],
+  ['대전', '계좌 변경 후 재입금 요구'],
+  ['광주', '환불팀 2차 접근'],
+  ['수원', '지갑주소 입금 후 출금 제한']
+];
+
+const faqs = [
+  [
+    '이미 입금한 원금을 돌려받을 수 있나요?',
+    `회수 가능성은 입금 계좌, 상대방 특정 가능성, 증거자료 상태에 따라 달라집니다. 윤빛은 ${name} 관련 현재 남아 있는 자료를 기준으로 원금 회수 가능성부터 확인합니다.`
+  ],
+  [
+    '경찰 신고만 하면 원금이 돌아오나요?',
+    '경찰 신고는 수사의 출발점입니다. 원금 회수 가능성을 높이기 위해서는 입금 흐름, 상대방 특정 단서, 민·형사 절차 가능성을 함께 검토해야 합니다.'
+  ],
+  [
+    '추가 입금을 하면 출금이 가능하다고 합니다.',
+    '세금, 인증비, 보증금 명목의 추가 입금 요구는 위험 신호일 수 있습니다. 추가 송금 전 현재 정황과 자금 이동 경로를 먼저 확인해야 합니다.'
+  ],
+  [
+    '자료가 부족해도 상담 가능한가요?',
+    '가능합니다. 입금내역, 대화자료, 사이트 화면, 계좌정보 중 일부만 있어도 현재 대응 방향을 먼저 확인할 수 있습니다.'
+  ]
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(([question, answer]) => ({
+    '@type': 'Question',
+    name: question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: answer
+    }
+  }))
+};
+
+const howToSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: `${name} 피해 의심 시 원금 회수 가능성 확인 방법`,
+  description: `${name} 피해가 의심될 때 입금내역, 대화자료, 계좌정보를 기준으로 원금 회수 가능성을 확인하는 절차입니다.`,
+  totalTime: 'PT5M',
+  step: [
+    {
+      '@type': 'HowToStep',
+      position: 1,
+      name: '입금자료 보존',
+      text: '입금내역, 이체확인증, 계좌번호, 예금주, 지갑주소 등 자금 이동 경로를 확인할 자료를 보존합니다.'
+    },
+    {
+      '@type': 'HowToStep',
+      position: 2,
+      name: '대화자료 저장',
+      text: '카카오톡, 텔레그램, 문자, 사이트 상담창, 추가 입금 요구 내용을 삭제하지 않고 캡처합니다.'
+    },
+    {
+      '@type': 'HowToStep',
+      position: 3,
+      name: '법적 조치 검토',
+      text: '지급정지, 고소, 가압류, 손해배상, 합의 가능성을 함께 검토해 원금 회수 가능성을 높이는 방향으로 대응합니다.'
+    }
+  ]
+};
+
+const webPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: `${name} 피해 정황 확인 | 법무법인 윤빛`,
+  description: `${name} 관련 입금을 하신 상황이라면 출금 지연, 추가 입금 요구, 연락두절 정황을 기준으로 원금 회수 가능성부터 확인합니다.`,
+  inLanguage: 'ko-KR',
+  about: {
+    '@type': 'Thing',
+    name: `${name} 피해 정황 및 원금 회수 가능성`
+  }
+};
+---
+
+<style>
+  .yb-shot-page {
+    --yb-shot-accent: var(--yb-accent, #1e4b9b);
+    --yb-shot-gold: var(--yb-gold, #c9a45c);
+    --yb-shot-danger: var(--yb-danger, #7f1d1d);
+    min-height: 100vh;
+    background: #02050b;
+    color: #fff;
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow-x: hidden;
+  }
+
+  .yb-shot-page * {
+    box-sizing: border-box;
+  }
+
+  .yb-shot-inner {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+  }
+
+  .yb-shot-hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 50% 24%, rgba(36, 82, 176, 0.23), transparent 34%),
+      linear-gradient(135deg, #02050b 0%, #030814 36%, #061735 68%, #02050b 100%);
+  }
+
+  .yb-shot-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.72), transparent 28%, transparent 72%, rgba(0, 0, 0, 0.62)),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.42));
+    pointer-events: none;
+  }
+
+  .yb-shot-hero::after,
+  .yb-shot-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+    background-size: 82px 82px;
+    opacity: 0.36;
+    pointer-events: none;
+  }
+
+  .yb-shot-panel-a,
+  .yb-shot-panel-b,
+  .yb-shot-panel-c {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .yb-shot-panel-a {
+    left: 0;
+    top: 0;
+    width: 31vw;
+    height: 52vh;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.006)),
+      linear-gradient(180deg, rgba(13, 16, 25, 0.96), rgba(3, 6, 13, 0.98));
+  }
+
+  .yb-shot-panel-b {
+    right: 0;
+    top: 0;
+    width: 69vw;
+    height: 52vh;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(36, 88, 190, 0.16), transparent 44%),
+      linear-gradient(180deg, rgba(9, 31, 78, 0.9), rgba(5, 17, 43, 0.94));
+  }
+
+  .yb-shot-panel-c {
+    right: 0;
+    bottom: 0;
+    width: 69vw;
+    height: 25vh;
+    background:
+      radial-gradient(circle at 48% 42%, rgba(30, 76, 174, 0.14), transparent 48%),
+      linear-gradient(180deg, rgba(7, 28, 72, 0.82), rgba(4, 12, 31, 0.96));
+  }
+
+  .yb-shot-menu {
+    position: absolute;
+    top: 30px;
+    left: 36px;
+    z-index: 10;
+    width: 31px;
+    height: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .yb-shot-menu span {
+    display: block;
+    width: 31px;
+    height: 2px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.9);
+  }
+
+  .yb-shot-hero-content {
+    position: relative;
+    z-index: 3;
+    width: min(660px, calc(100% - 40px));
+    margin: 0 auto;
+    text-align: center;
+    transform: translateY(-2vh);
+  }
+
+  .yb-shot-kicker {
+    margin: 0 0 14px;
+    color: var(--yb-shot-gold);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    line-height: 1.35;
+    word-break: keep-all;
+  }
+
+  .yb-shot-hero h1,
+  .yb-shot-head h2,
+  .yb-shot-copy h2 {
+    margin: 0;
+    color: #fff;
+    font-family: "Noto Serif KR", "Song Myung", "Nanum Myeongjo", Georgia, serif;
+    font-weight: 500;
+    letter-spacing: -0.075em;
+    word-break: keep-all;
+  }
+
+  .yb-shot-hero h1 {
+    font-size: clamp(42px, 7vw, 68px);
+    line-height: 1.12;
+    text-shadow: 0 8px 34px rgba(0, 0, 0, 0.55);
+  }
+
+  .yb-shot-hero-copy {
+    margin: 22px auto 0;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 15px;
+    font-weight: 350;
+    line-height: 1.72;
+    word-break: keep-all;
+  }
+
+  .yb-shot-hero-actions {
+    width: min(520px, 100%);
+    margin: 30px auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .yb-shot-action {
+    min-height: 50px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.055);
+    backdrop-filter: blur(10px);
+  }
+
+  .yb-shot-action.primary {
+    border-color: rgba(201, 164, 92, 0.44);
+    background: linear-gradient(135deg, rgba(201, 164, 92, 0.25), rgba(24, 54, 118, 0.22));
+    color: #f1d48d;
+  }
+
+  .yb-shot-section {
+    position: relative;
+    padding: 82px 0;
+    background:
+      radial-gradient(circle at 82% 10%, rgba(20, 57, 128, 0.12), transparent 34%),
+      linear-gradient(180deg, #02050b 0%, #050916 100%);
+    overflow: hidden;
+  }
+
+  .yb-shot-section.alt {
+    background:
+      radial-gradient(circle at 10% 10%, rgba(201, 164, 92, 0.08), transparent 32%),
+      linear-gradient(180deg, #050916 0%, #02050b 100%);
+  }
+
+  .yb-shot-head {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    margin-bottom: 34px;
+  }
+
+  .yb-shot-head p,
+  .yb-shot-copy p {
+    margin: 0 0 12px;
+    color: var(--yb-shot-gold);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+  }
+
+  .yb-shot-head h2,
+  .yb-shot-copy h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.25;
+  }
+
+  .yb-shot-head span,
+  .yb-shot-copy span {
+    display: block;
+    margin-top: 16px;
+    color: rgba(255, 255, 255, 0.64);
+    font-size: 15px;
+    font-weight: 350;
+    line-height: 1.75;
+    word-break: keep-all;
+  }
+
+  .yb-shot-grid-3,
+  .yb-shot-proof-grid,
+  .yb-shot-faq-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 14px;
+  }
+
+  .yb-shot-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .yb-shot-proof-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .yb-shot-faq-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .yb-shot-card,
+  .yb-shot-mini,
+  .yb-shot-consult,
+  .yb-shot-faq,
+  .yb-shot-live {
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012)),
+      rgba(4, 10, 24, 0.74);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(10px);
+  }
+
+  .yb-shot-card,
+  .yb-shot-mini,
+  .yb-shot-faq {
+    display: block;
+    min-height: 185px;
+    padding: 25px 23px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .yb-shot-card i,
+  .yb-shot-mini i,
+  .yb-shot-faq i {
+    display: block;
+    margin-bottom: 24px;
+    color: var(--yb-shot-gold);
+    font-style: normal;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+  }
+
+  .yb-shot-card strong,
+  .yb-shot-mini strong,
+  .yb-shot-faq strong {
+    display: block;
+    margin-bottom: 12px;
+    color: #fff;
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.25;
+  }
+
+  .yb-shot-card p,
+  .yb-shot-mini p,
+  .yb-shot-faq p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 14px;
+    line-height: 1.7;
+    word-break: keep-all;
+  }
+
+  .yb-shot-split {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: 34px;
+    align-items: center;
+  }
+
+  .yb-shot-mini-grid,
+  .yb-shot-consult-stack {
+    display: grid;
+    gap: 14px;
+  }
+
+  .yb-shot-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    min-height: 44px;
+    margin-top: 26px;
+    padding: 0 20px;
+    border: 1px solid rgba(201, 164, 92, 0.42);
+    background: rgba(201, 164, 92, 0.08);
+    color: #f1d48d;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+  }
+
+  .yb-shot-proof-note {
+    position: relative;
+    z-index: 2;
+    margin-top: 18px;
+    padding: 15px 18px;
+    border: 1px solid rgba(201, 164, 92, 0.16);
+    background: rgba(201, 164, 92, 0.055);
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .yb-shot-consult {
+    padding: 26px;
+  }
+
+  .yb-shot-live {
+    padding: 20px;
+  }
+
+  .yb-shot-live h3 {
+    margin: 0 0 14px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .yb-shot-live ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 9px;
+  }
+
+  .yb-shot-live li {
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 13px;
+  }
+
+  .yb-shot-live li:first-child {
+    border-top: 0;
+  }
+
+  .yb-shot-live b {
+    color: var(--yb-shot-gold);
+    font-size: 13px;
+  }
+
+  @media (max-width: 900px) {
+    .yb-shot-grid-3,
+    .yb-shot-proof-grid,
+    .yb-shot-faq-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .yb-shot-split {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .yb-shot-inner {
+      width: min(100% - 32px, 1120px);
+    }
+
+    .yb-shot-menu {
+      top: 28px;
+      left: 28px;
+    }
+
+    .yb-shot-hero-content {
+      width: min(430px, calc(100% - 42px));
+      transform: translateY(-2vh);
+    }
+
+    .yb-shot-hero h1 {
+      font-size: 39px;
+    }
+
+    .yb-shot-hero-copy {
+      font-size: 14px;
+      line-height: 1.58;
+    }
+
+    .yb-shot-hero-actions {
+      grid-template-columns: 1fr;
+      width: min(390px, 100%);
+    }
+
+    .yb-shot-section {
+      padding: 70px 0;
+    }
+
+    .yb-shot-card,
+    .yb-shot-mini,
+    .yb-shot-faq {
+      min-height: auto;
+    }
+
+    .yb-shot-consult {
+      padding: 18px;
+    }
+  }
+</style>
+
+<div
+  class={`yb-shot-page yb-shot-page-${theme}`}
+  style={`--yb-accent:${accent};--yb-gold:${gold};--yb-danger:${danger};`}
+>
+  <section class="yb-shot-hero" id="hero">
+    <div class="yb-shot-panel-a"></div>
+    <div class="yb-shot-panel-b"></div>
+    <div class="yb-shot-panel-c"></div>
+
+    <button class="yb-shot-menu" aria-label="메뉴 열기">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="yb-shot-hero-content">
+      <p class="yb-shot-kicker">{name} 피해 정황 확인</p>
+
+      <h1>
+        입금하신 금액을<br />
+        포기하기 전
+      </h1>
+
+      <p class="yb-shot-hero-copy">
+        윤빛이 자금세탁 이동 경로와<br />
+        원금 회수 가능성부터 확인하겠습니다.
+      </p>
+
+      <div class="yb-shot-hero-actions">
+        <a class="yb-shot-action primary" href="#consult">원금 회수 가능성 상담하기</a>
+        <a class="yb-shot-action" href={kakao} target="_blank" rel="noopener noreferrer">피해자료 보내기</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="yb-shot-section" id="paid">
+    <div class="yb-shot-inner yb-shot-split">
+      <div class="yb-shot-copy">
+        <p>IF YOU PAID</p>
+
+        <h2>
+          {name} 관련<br />
+          입금을 하셨다면
+        </h2>
+
+        <span>
+          처음부터 사기라고 생각하지 않았을 수 있습니다.
+          처음에는 수익이 보였고, 담당자도 정상적으로 응대했을 수 있습니다.
+          하지만 출금이 지연되고 추가 입금을 요구받고 있다면,
+          지금은 기다림보다 원금 회수 가능성 확인이 먼저입니다.
+        </span>
+
+        <a class="yb-shot-link" href="#consult">현재 상황 상담하기 →</a>
+      </div>
+
+      <div class="yb-shot-mini-grid">
+        <article class="yb-shot-mini">
+          <i>01</i>
+          <strong>출금 지연</strong>
+          <p>출금 신청 후 처리 중이라는 말만 반복된다면 현재 정황을 먼저 확인해야 합니다.</p>
+        </article>
+
+        <article class="yb-shot-mini">
+          <i>02</i>
+          <strong>추가 입금 요구</strong>
+          <p>세금, 인증비, 수수료, 보증금 명목의 추가 입금은 위험 신호일 수 있습니다.</p>
+        </article>
+
+        <article class="yb-shot-mini">
+          <i>03</i>
+          <strong>연락두절</strong>
+          <p>담당자 답변이 늦어지거나 사이트 접속이 막히면 자료 보존이 우선입니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="yb-shot-section alt" id="recovery">
+    <div class="yb-shot-inner">
+      <div class="yb-shot-head">
+        <p>RECOVERY CHECK</p>
+
+        <h2>
+          원금 회수 가능성을 높이기 위해<br />
+          윤빛은 3가지를 확인합니다.
+        </h2>
+
+        <span>
+          사기 조직은 피해금을 대포통장, 가상계좌, 지갑주소로 빠르게 분산시킵니다.
+          윤빛은 자금세탁 이동 경로를 정리하고 필요한 법적 조치로 원금 회수 가능성을 높입니다.
+        </span>
+      </div>
+
+      <div class="yb-shot-grid-3">
+        {recoveryChecks.map(([num, title, desc]) => (
+          <a class="yb-shot-card" href="#consult">
+            <i>{num}</i>
+            <strong>{title}</strong>
+            <p>{desc}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="yb-shot-section" id="proof">
+    <div class="yb-shot-inner">
+      <div class="yb-shot-head">
+        <p>PROOF OF RESPONSE</p>
+
+        <h2>
+          실제 자료로 확인되는<br />
+          윤빛의 대응 경험
+        </h2>
+
+        <span>
+          윤빛은 입금내역, 대화자료, 사이트 화면, 계좌정보를 기준으로
+          합의 가능성, 민·형사 절차, 공동대응 여부를 함께 검토합니다.
+        </span>
+      </div>
+
+      <div class="yb-shot-proof-grid">
+        {proofCards.map(([num, title, desc]) => (
+          <article class="yb-shot-mini">
+            <i>{num}</i>
+            <strong>{title}</strong>
+            <p>{desc}</p>
+          </article>
+        ))}
+      </div>
+
+      <div class="yb-shot-proof-note">
+        ※ 의뢰인 정보, 사건번호, 계좌번호, 서명·도장 등 특정 가능한 정보는 비식별 처리합니다.
+        사건 결과는 사안별 증거 상태와 상대방 특정 여부에 따라 달라질 수 있습니다.
+      </div>
+    </div>
+  </section>
+
+  <section class="yb-shot-section alt" id="consult">
+    <div class="yb-shot-inner yb-shot-split">
+      <div class="yb-shot-copy">
+        <p>CONSULTATION</p>
+
+        <h2>
+          {name} 피해,<br />
+          원금 회수 가능성부터 확인하세요.
+        </h2>
+
+        <span>
+          입금내역, 대화자료, 사이트 캡처가 남아 있다면
+          현재 자료만으로도 대응 방향을 먼저 확인할 수 있습니다.
+          기다리는 동안 대화방, 사이트, 계좌 단서가 사라질 수 있습니다.
+        </span>
+      </div>
+
+      <div class="yb-shot-consult-stack">
+        <div class="yb-shot-consult">
+          <ConsultForm site={site} caseName={`${name} 원금 회수 가능성 상담`} />
+        </div>
+
+        <div class="yb-shot-live">
+          <h3>실시간 상담 신청 현황</h3>
+          <ul>
+            {liveCases.map(([area, desc]) => (
+              <li>
+                <b>{area}</b>
+                <span>{desc}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yb-shot-section" id="faq-list">
+    <div class="yb-shot-inner">
+      <div class="yb-shot-head">
+        <p>Q&A</p>
+
+        <h2>
+          {name} 피해 상담 전<br />
+          자주 묻는 질문
+        </h2>
+      </div>
+
+      <div class="yb-shot-faq-grid">
+        {faqs.map(([question, answer], index) => (
+          <article class="yb-shot-faq">
+            <i>{String(index + 1).padStart(2, '0')}</i>
+            <strong>{question}</strong>
+            <p>{answer}</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</div>
+
+<script type="application/ld+json" set:html={JSON.stringify(webPageSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />

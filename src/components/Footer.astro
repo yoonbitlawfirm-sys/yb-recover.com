@@ -1,0 +1,11 @@
+---
+const { site } = Astro.props;
+---
+<footer class="yb-footer">
+  <div class="yb-inner">
+    <p><strong>{site.brandName}</strong> · {site.siteName}</p>
+    <p>대표전화: <a href={site.telLink}>{site.phone}</a> · 이메일: contact@yoonbitlawfirm.com</p>
+    <p>본 페이지는 금융사기 피해 정황 안내와 법률상담 접수를 위한 페이지입니다. 사건별 결과는 사실관계와 증거에 따라 달라질 수 있습니다.</p>
+    <p>© {new Date().getFullYear()} {site.brandName}. All rights reserved.</p>
+  </div>
+</footer>

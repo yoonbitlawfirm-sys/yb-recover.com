@@ -1,0 +1,10 @@
+---
+const { site, label = '금융사기 피해 상담' } = Astro.props;
+---
+<div class="yb-floating">
+  <div class="yb-floating-in">
+    <span><strong>{label}</strong> · 추가 송금 전 정황 확인</span>
+    <a class="yb-pill primary" href={site.telLink}>전화 상담</a>
+    <a class="yb-pill" href={site.kakaoUrl} target="_blank" rel="noopener">카카오 상담</a>
+  </div>
+</div>

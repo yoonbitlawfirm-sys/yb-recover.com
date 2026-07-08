@@ -1,0 +1,204 @@
+---
+const { site } = Astro.props;
+
+const quickScams = [
+  '코인사기',
+  '출금거부',
+  '추가입금요구',
+  '리딩방사기',
+  '부업사기',
+  '로맨스스캠'
+];
+---
+
+<style is:global>
+  header,
+  nav,
+  .site-header,
+  .yb-header,
+  .global-header,
+  .main-header,
+  .top-header,
+  .navbar,
+  .gnb,
+  .header,
+  .header-wrap,
+  .nav-wrap,
+  .navigation,
+  .desktop-nav,
+  .mobile-nav,
+  .top-floating,
+  .top-fixed,
+  .fixed-top,
+  .floating-top,
+  .reservation-bar,
+  .consult-reserve,
+  .reserve-button,
+  .bottom-floating,
+  .floating-cta,
+  .bottom-cta,
+  .sticky-cta,
+  .fixed-cta,
+  .mobile-cta,
+  .consult-floating,
+  .floating-consult,
+  .quick-consult,
+  .quick-cta,
+  .cta-fixed,
+  .fixed-bottom,
+  .bottom-bar,
+  .floating-bar,
+  .contact-floating,
+  .floating-bottom,
+  .bottom-consult,
+  .consult-bar,
+  .sticky-bottom,
+  .floating-call,
+  .call-floating,
+  .fixed-consult-bar {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+
+  body > div[style*="position: fixed"],
+  body > section[style*="position: fixed"],
+  body > aside[style*="position: fixed"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden;
+    background: #02050b;
+  }
+
+  .launch-base {
+    min-height: 100svh !important;
+    height: 100svh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+</style>
+
+<section
+  class={`launch-base launch-base-${site.theme}`}
+  style={`--yb-accent:${site.colors.accent};--yb-gold:${site.colors.gold};--yb-danger:${site.colors.danger};`}
+>
+  <div class="launch-bg" aria-hidden="true">
+    <div class="launch-scene scene-a"></div>
+    <div class="launch-scene scene-b"></div>
+    <div class="launch-scene scene-c"></div>
+    <div class="launch-gridline"></div>
+  </div>
+
+  <button class="launch-menu-button" aria-label="메뉴 열기">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <div class="launch-brand yb-reveal">
+    <p>{site.position}</p>
+    <h1>법무법인 윤빛</h1>
+    <span>{site.tagline}</span>
+
+    <form
+      class="launch-searchbox"
+      id="launchSearch"
+      action="/scam/출금거부"
+      method="get"
+      aria-label="피해 정황 검색"
+    >
+      <input
+        id="launchSearchInput"
+        type="search"
+        placeholder="업체명 또는 피해 정황을 입력하세요"
+        autocomplete="off"
+      />
+
+      <button type="submit" aria-label="검색">
+        <svg
+          viewBox="0 0 24 24"
+          width="26"
+          height="26"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+      </button>
+    </form>
+
+    <div class="launch-keywords" aria-label="주요 피해 키워드">
+      {quickScams.map((keyword) => (
+        <a href={`/scam/${encodeURIComponent(keyword)}`}>{keyword}</a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  const form = document.getElementById('launchSearch');
+  const input = document.getElementById('launchSearchInput');
+
+  if (form && input) {
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const value = (input.value || '').replace(/\s+/g, '').trim() || '출금거부';
+
+      location.href = `/scam/${encodeURIComponent(value)}`;
+    });
+  }
+
+  const removeFloatingUI = () => {
+    const elements = Array.from(document.querySelectorAll('body *'));
+
+    elements.forEach((el) => {
+      const text = (el.innerText || '').trim();
+      const style = window.getComputedStyle(el);
+      const rect = el.getBoundingClientRect();
+
+      const isFixed =
+        style.position === 'fixed' ||
+        style.position === 'sticky';
+
+      const isTopOrBottom =
+        rect.top <= 90 ||
+        window.innerHeight - rect.bottom <= 90;
+
+      const hasFloatingText =
+        text.includes('상담 예약') ||
+        text.includes('전화 상담') ||
+        text.includes('카카오 상담') ||
+        text.includes('법무법인 윤빛');
+
+      const isFloatingSize =
+        rect.width >= window.innerWidth * 0.45 &&
+        rect.height <= 90;
+
+      if (isFixed && isTopOrBottom && hasFloatingText && isFloatingSize) {
+        el.remove();
+      }
+    });
+  };
+
+  removeFloatingUI();
+  window.addEventListener('load', removeFloatingUI);
+  setTimeout(removeFloatingUI, 300);
+  setTimeout(removeFloatingUI, 800);
+  setTimeout(removeFloatingUI, 1500);
+</script>

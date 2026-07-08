@@ -1,0 +1,21 @@
+---
+const { site } = Astro.props;
+---
+<header class="yb-header">
+  <div class="yb-inner yb-header-in">
+    <a class="yb-logo" href="/" aria-label={site.siteName}>
+      <span class="yb-logo-mark">Y</span>
+      <span>{site.brandName}</span>
+    </a>
+    <nav class="yb-nav" aria-label="주요 메뉴">
+      <a href="/#services">업무영역</a>
+      <a href="/#process">대응절차</a>
+      <a href="/#cases">성공사례</a>
+      <a href="/#consult">상담신청</a>
+    </nav>
+    <div class="yb-header-cta">
+      <a class="yb-pill" href={site.telLink}>{site.phone}</a>
+      <a class="yb-pill primary" href="#consult">상담 예약</a>
+    </div>
+  </div>
+</header>
