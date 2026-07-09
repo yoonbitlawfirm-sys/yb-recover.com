@@ -1,14 +1,5 @@
 ---
 const { site } = Astro.props;
-
-const quickScams = [
-  '코인사기',
-  '출금거부',
-  '추가입금요구',
-  '리딩방사기',
-  '부업사기',
-  '로맨스스캠'
-];
 ---
 
 <style is:global>
@@ -81,6 +72,13 @@ const quickScams = [
     padding: 0 !important;
     overflow-x: hidden;
     background: #02050b;
+    font-family:
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Noto Sans KR",
+      sans-serif;
   }
 
   .launch-base {
@@ -88,6 +86,101 @@ const quickScams = [
     height: 100svh !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+
+  .yb-footer,
+  footer {
+    background: #02050b !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .yb-footer-overridden {
+    margin: 0 !important;
+    padding: 42px 22px 48px !important;
+    background: #02050b !important;
+    color: rgba(255, 255, 255, 0.58) !important;
+    font-family:
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Noto Sans KR",
+      sans-serif !important;
+  }
+
+  .yb-footer-overridden .yb-footer-inner {
+    width: min(100%, 920px) !important;
+    margin: 0 auto !important;
+  }
+
+  .yb-footer-overridden p {
+    margin: 0 !important;
+    padding: 0 !important;
+    word-break: keep-all !important;
+  }
+
+  .yb-footer-overridden .yb-footer-title {
+    margin-bottom: 18px !important;
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    letter-spacing: -0.04em !important;
+  }
+
+  .yb-footer-overridden .yb-footer-title strong {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+
+  .yb-footer-overridden .yb-footer-title span {
+    color: rgba(255, 255, 255, 0.66) !important;
+    font-weight: 300 !important;
+  }
+
+  .yb-footer-overridden .yb-footer-info {
+    display: grid !important;
+    gap: 5px !important;
+    margin-bottom: 22px !important;
+  }
+
+  .yb-footer-overridden .yb-footer-info p {
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+    letter-spacing: -0.035em !important;
+    color: rgba(255, 255, 255, 0.62) !important;
+    font-weight: 300 !important;
+  }
+
+  .yb-footer-overridden .yb-footer-copy {
+    font-size: 13px !important;
+    line-height: 1.6 !important;
+    letter-spacing: -0.035em !important;
+    color: rgba(255, 255, 255, 0.42) !important;
+    font-weight: 300 !important;
+  }
+
+  @media (max-width: 640px) {
+    .yb-footer-overridden {
+      padding: 36px 18px 42px !important;
+    }
+
+    .yb-footer-overridden .yb-footer-title {
+      margin-bottom: 16px !important;
+      font-size: 15px !important;
+    }
+
+    .yb-footer-overridden .yb-footer-info {
+      gap: 4px !important;
+      margin-bottom: 20px !important;
+    }
+
+    .yb-footer-overridden .yb-footer-info p {
+      font-size: 13px !important;
+      line-height: 1.7 !important;
+    }
+
+    .yb-footer-overridden .yb-footer-copy {
+      font-size: 12px !important;
+    }
   }
 </style>
 
@@ -102,16 +195,14 @@ const quickScams = [
     <div class="launch-gridline"></div>
   </div>
 
-  <button class="launch-menu-button" aria-label="메뉴 열기">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
+  <div class="launch-brand">
+    <p class="launch-kicker">금융사기 피해회복센터</p>
 
-  <div class="launch-brand yb-reveal">
-    <p>{site.position}</p>
     <h1>법무법인 윤빛</h1>
-    <span>{site.tagline}</span>
+
+    <p class="launch-subtitle">
+      지금 거래가 정상적인 거래인지 확인하세요.
+    </p>
 
     <form
       class="launch-searchbox"
@@ -123,15 +214,15 @@ const quickScams = [
       <input
         id="launchSearchInput"
         type="search"
-        placeholder="업체명 또는 피해 정황을 입력하세요"
+        placeholder="업체명 또는 URL을 입력하세요"
         autocomplete="off"
       />
 
       <button type="submit" aria-label="검색">
         <svg
           viewBox="0 0 24 24"
-          width="26"
-          height="26"
+          width="20"
+          height="20"
           fill="none"
           stroke="currentColor"
           stroke-width="2"
@@ -142,13 +233,204 @@ const quickScams = [
       </button>
     </form>
 
-    <div class="launch-keywords" aria-label="주요 피해 키워드">
-      {quickScams.map((keyword) => (
-        <a href={`/scam/${encodeURIComponent(keyword)}`}>{keyword}</a>
-      ))}
-    </div>
+    <p class="launch-guide">
+      등록된 업체라면 즉시 확인 페이지로 이동합니다.
+    </p>
   </div>
 </section>
+
+<style>
+  .launch-base {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    overflow: hidden;
+  }
+
+  .launch-brand {
+    position: relative;
+    z-index: 5;
+    width: min(90vw, 720px);
+    margin: 0 auto;
+    text-align: center;
+    transform: translateY(-2vh);
+  }
+
+  .launch-kicker {
+    margin: 0 0 18px;
+    font-size: clamp(12px, 1.45vw, 14px);
+    line-height: 1;
+    letter-spacing: 0.28em;
+    color: rgba(255, 255, 255, 0.56);
+    font-weight: 400;
+  }
+
+  .launch-brand h1 {
+    margin: 0;
+    font-family:
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Noto Sans KR",
+      sans-serif;
+    font-size: clamp(42px, 7vw, 74px);
+    line-height: 1.08;
+    letter-spacing: -0.065em;
+    color: rgba(255, 255, 255, 0.96);
+    font-weight: 500;
+    text-shadow: none;
+  }
+
+  .launch-subtitle {
+    width: min(92vw, 620px);
+    margin: 24px auto 0;
+    font-size: clamp(15px, 1.7vw, 18px);
+    line-height: 1.75;
+    letter-spacing: -0.035em;
+    word-break: keep-all;
+    color: rgba(255, 255, 255, 0.68);
+    font-weight: 300;
+  }
+
+  .launch-searchbox {
+    width: min(86vw, 500px) !important;
+    height: 54px !important;
+    min-height: 54px !important;
+    margin: 34px auto 0 !important;
+    padding: 0 7px 0 22px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    border-radius: 999px !important;
+    background: rgba(4, 8, 16, 0.68) !important;
+    border: 1px solid rgba(255, 255, 255, 0.13) !important;
+    box-shadow:
+      0 18px 50px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.045) !important;
+    backdrop-filter: blur(16px);
+  }
+
+  .launch-searchbox input {
+    flex: 1;
+    width: 100%;
+    height: 100% !important;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-size: 14.5px !important;
+    letter-spacing: -0.025em;
+    font-weight: 300 !important;
+  }
+
+  .launch-searchbox input::placeholder {
+    color: rgba(255, 255, 255, 0.36) !important;
+    font-weight: 300;
+  }
+
+  .launch-searchbox button {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: rgba(166, 28, 39, 0.92) !important;
+    color: #fff !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer;
+    box-shadow: 0 8px 22px rgba(139, 18, 28, 0.24);
+    transition:
+      transform 0.18s ease,
+      background 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  .launch-searchbox button:hover {
+    transform: translateY(-1px);
+    background: rgba(185, 34, 46, 0.96) !important;
+    box-shadow: 0 12px 28px rgba(139, 18, 28, 0.32);
+  }
+
+  .launch-guide {
+    width: min(86vw, 480px);
+    margin: 15px auto 0;
+    font-size: 13px;
+    line-height: 1.65;
+    letter-spacing: -0.035em;
+    word-break: keep-all;
+    color: rgba(255, 255, 255, 0.42);
+    font-weight: 300;
+  }
+
+  @media (max-width: 640px) {
+    .launch-brand {
+      width: min(88vw, 420px);
+      transform: translateY(-3vh);
+    }
+
+    .launch-kicker {
+      margin-bottom: 16px;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+    }
+
+    .launch-brand h1 {
+      font-size: clamp(40px, 11.5vw, 56px);
+      line-height: 1.08;
+      font-weight: 500;
+      letter-spacing: -0.07em;
+    }
+
+    .launch-subtitle {
+      margin-top: 22px;
+      font-size: 15px;
+      line-height: 1.68;
+      color: rgba(255, 255, 255, 0.66);
+    }
+
+    .launch-searchbox {
+      width: min(88vw, 360px) !important;
+      height: 50px !important;
+      min-height: 50px !important;
+      margin-top: 30px !important;
+      padding-left: 18px !important;
+      padding-right: 6px !important;
+    }
+
+    .launch-searchbox input {
+      font-size: 14px !important;
+    }
+
+    .launch-searchbox button {
+      width: 38px !important;
+      height: 38px !important;
+      min-width: 38px !important;
+    }
+
+    .launch-guide {
+      width: min(84vw, 340px);
+      margin-top: 14px;
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+
+    .pc-only {
+      display: none;
+    }
+  }
+
+  @media (max-height: 680px) {
+    .launch-brand {
+      transform: translateY(-6vh);
+    }
+  }
+</style>
 
 <script is:inline>
   const form = document.getElementById('launchSearch');
@@ -158,11 +440,41 @@ const quickScams = [
     form.addEventListener('submit', (event) => {
       event.preventDefault();
 
-      const value = (input.value || '').replace(/\s+/g, '').trim() || '출금거부';
+      const value = (input.value || '')
+        .replace(/\s+/g, '')
+        .trim();
 
-      location.href = `/scam/${encodeURIComponent(value)}`;
+      const keyword = value || '출금거부';
+
+      location.href = `/scam/${encodeURIComponent(keyword)}`;
     });
   }
+
+  const replaceFooter = () => {
+    const footers = Array.from(document.querySelectorAll('footer, .yb-footer'));
+
+    footers.forEach((footer) => {
+      footer.className = 'yb-footer yb-footer-overridden';
+      footer.innerHTML = `
+        <div class="yb-footer-inner">
+          <p class="yb-footer-title">
+            <strong>법무법인 윤빛</strong>
+            <span>ㅣ금융사기 피해회복센터</span>
+          </p>
+
+          <div class="yb-footer-info">
+            <p>광고책임변호사 : 윤수빈 변호사</p>
+            <p>사업자등록번호 : 754-87-03255</p>
+            <p>주소 : 서울특별시 강남구 영동대로 621, 621빌딩 11층</p>
+          </div>
+
+          <p class="yb-footer-copy">
+            © 2026 법무법인 윤빛. All rights reserved.
+          </p>
+        </div>
+      `;
+    });
+  };
 
   const removeFloatingUI = () => {
     const elements = Array.from(document.querySelectorAll('body *'));
@@ -196,9 +508,26 @@ const quickScams = [
     });
   };
 
+  replaceFooter();
   removeFloatingUI();
-  window.addEventListener('load', removeFloatingUI);
-  setTimeout(removeFloatingUI, 300);
-  setTimeout(removeFloatingUI, 800);
-  setTimeout(removeFloatingUI, 1500);
+
+  window.addEventListener('load', () => {
+    replaceFooter();
+    removeFloatingUI();
+  });
+
+  setTimeout(() => {
+    replaceFooter();
+    removeFloatingUI();
+  }, 300);
+
+  setTimeout(() => {
+    replaceFooter();
+    removeFloatingUI();
+  }, 800);
+
+  setTimeout(() => {
+    replaceFooter();
+    removeFloatingUI();
+  }, 1500);
 </script>
