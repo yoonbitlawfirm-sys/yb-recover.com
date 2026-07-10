@@ -7,13 +7,13 @@ import CasePage from '../../components/CasePage.astro';
 import { getCurrentSite } from '../../config/sites.js';
 import { getCaseBySlug } from '../../lib/sheet.js';
 import { getStatus } from '../../lib/utils.js';
-import { buildCaseSeo, legalServiceJsonLd, caseArticleJsonLd, faqJsonLd, breadcrumbJsonLd } from '../../lib/seo.js';
+import { buildCaseSeo, caseJsonLdGraph } from '../../lib/seo.js';
 
 export const prerender = false;
 
 const site = getCurrentSite(Astro.url.host);
 const { slug } = Astro.params;
-const row = await getCaseBySlug(slug);
+const row = await getCaseBySlug(slug, site);
 
 if (!row) {
   return new Response('페이지를 찾을 수 없습니다.', {
@@ -51,12 +51,9 @@ if (status === 'redirect' && row.redirectTo) {
 const seo = buildCaseSeo(row, site, Astro.url);
 const robots = status === 'noindex' ? 'noindex, nofollow' : 'index, follow';
 
-const legalJson = legalServiceJsonLd(site, Astro.url);
-const articleJson = caseArticleJsonLd(row, site, Astro.url, seo.canonical);
-const faqJson = faqJsonLd(row);
-const breadcrumbJson = breadcrumbJsonLd(row, site, Astro.url, seo.canonical);
+const jsonLd = caseJsonLdGraph(row, site, Astro.url, seo);
 
-const ogImage = 'https://yb-recover.com/images/yoonbit-og.png';
+const ogImage = `${Astro.url.origin}/images/yoonbit-og.png`;
 const favicon = '/images/favicon.png';
 ---
 
@@ -68,14 +65,22 @@ const favicon = '/images/favicon.png';
 
     <title>{seo.title}</title>
     <meta name="description" content={seo.description} />
-    <meta name="robots" content={robots} />
+    <meta name="robots" content={robots === 'index, follow' ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' : robots} />
+    <meta name="keywords" content={seo.keywords.join(', ')} />
+    <meta name="author" content={site.siteName} />
+    <meta name="content-language" content="ko-KR" />
+    <meta name="subject" content={`${seo.name} 사칭 사기 피해 대응`} />
+    <meta name="theme-color" content="#02050b" />
 
-    <meta name="NaverBot" content="All" />
-    <meta name="NaverBot" content="index,follow" />
-    <meta name="Yeti" content="All" />
-    <meta name="Yeti" content="index,follow" />
+    <meta name="NaverBot" content="index, follow" />
+    <meta name="Yeti" content="index, follow" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1" />
 
     <link rel="canonical" href={seo.canonical} />
+    <link rel="alternate" hreflang="ko-KR" href={seo.canonical} />
+    <link rel="alternate" hreflang="x-default" href={seo.canonical} />
+    <link rel="alternate" type="application/rss+xml" title={`${site.siteName} RSS`} href={`${Astro.url.origin}/rss.xml`} />
+    <link rel="sitemap" type="application/xml" href={`${Astro.url.origin}/sitemap.xml`} />
 
     <link rel="icon" type="image/png" href={favicon} />
     <link rel="shortcut icon" type="image/png" href={favicon} />
@@ -88,20 +93,27 @@ const favicon = '/images/favicon.png';
     <meta property="og:site_name" content={site.siteName} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="법무법인 윤빛 금융사기 피해회복센터" />
+    <meta property="og:image:alt" content={site.siteName} />
     <meta property="og:locale" content="ko_KR" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={seo.title} />
     <meta name="twitter:description" content={seo.description} />
     <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={`${seo.name} 사칭 사기 피해 대응`} />
 
-    <script type="application/ld+json" set:html={JSON.stringify(legalJson)} />
-    <script type="application/ld+json" set:html={JSON.stringify(articleJson)} />
-    <script type="application/ld+json" set:html={JSON.stringify(faqJson)} />
-    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJson)} />
+    <meta property="article:published_time" content={`${seo.publishedAt}T09:00:00+09:00`} />
+    <meta property="article:modified_time" content={`${seo.updatedAt}T09:00:00+09:00`} />
+    <meta property="article:section" content={seo.caseType} />
+    <meta property="article:author" content={site.brandName} />
+    {seo.keywords.slice(0, 6).map((keyword) => <meta property="article:tag" content={keyword} />)}
+    <link rel="image_src" href={ogImage} />
+    <meta itemprop="image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
 
   <body>
@@ -147,5 +159,12 @@ const favicon = '/images/favicon.png';
         });
       });
     </script>
+      {site.siteKey === 'yb-recover' && (
+      <>
+        <script is:inline type="text/javascript">var hpt_info={'_account':'UHPT-300506','_server':'a300'};</script>
+        <script is:inline src="//cdn.smlog.co.kr/core/smart_renew.js" charset="utf-8"></script>
+        <noscript><img src="//a300.smlog.co.kr/smart_bda?_account=300506" style="display:none;width:0;height:0;" border="0" alt="" /></noscript>
+      </>
+    )}
   </body>
 </html>

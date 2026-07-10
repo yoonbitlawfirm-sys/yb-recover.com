@@ -4,7 +4,9 @@ const { site = {} } = Astro.props;
 const theme = site?.theme || 'main';
 const accent = site?.colors?.accent || '#a61c27';
 const gold = site?.colors?.gold || '#c9a45c';
-const danger = site?.colors?.danger || '#7f1d1d';
+const danger = site?.colors?.accent || '#7f1d1d';
+const launcher = site?.launcher || {};
+const isRecover = site?.siteKey === 'yb-recover';
 ---
 
 <style is:global>
@@ -104,7 +106,7 @@ const danger = site?.colors?.danger || '#7f1d1d';
     margin: 0 !important;
     padding: 0 !important;
     overflow-x: hidden;
-    background: #02050b;
+    background: var(--site-bg, #02050b);
     font-family:
       Pretendard,
       -apple-system,
@@ -117,7 +119,7 @@ const danger = site?.colors?.danger || '#7f1d1d';
 
 <section
   class={`launch-base launch-base-${theme}`}
-  style={`--yb-accent:${accent};--yb-gold:${gold};--yb-danger:${danger};`}
+  style={`--yb-accent:${accent};--yb-gold:${gold};--yb-danger:${danger};--site-bg:${site?.colors?.bg || "#02050b"};--site-surface:${site?.colors?.surface || "#07101d"};--site-text:${site?.colors?.text || "#fff"};`}
 >
   <div class="launch-bg" aria-hidden="true">
     <div class="launch-scene scene-a"></div>
@@ -127,12 +129,12 @@ const danger = site?.colors?.danger || '#7f1d1d';
   </div>
 
   <div class="launch-brand">
-    <p class="launch-kicker">금융사기 피해회복센터</p>
+    <p class="launch-kicker">{launcher.eyebrow || site.shortName}</p>
 
-    <h1>법무법인 윤빛</h1>
+    <h1>{launcher.headline || site.siteName}</h1>
 
     <p class="launch-subtitle">
-      지금 거래가 정상적인 거래인지 확인하세요.
+      {launcher.subtitle || site.description}
     </p>
 
     <form
@@ -145,7 +147,7 @@ const danger = site?.colors?.danger || '#7f1d1d';
       <input
         id="launchSearchInput"
         type="search"
-        placeholder="업체명 또는 URL을 입력하세요"
+        placeholder={launcher.placeholder || "업체명 또는 키워드를 입력하세요"}
         autocomplete="off"
       />
 
@@ -165,7 +167,7 @@ const danger = site?.colors?.danger || '#7f1d1d';
     </form>
 
     <p class="launch-guide">
-      등록된 업체라면 즉시 확인 페이지로 이동합니다.
+      {launcher.guide || "입력한 키워드 안내 페이지로 이동합니다."}
     </p>
   </div>
 </section>
@@ -173,18 +175,19 @@ const danger = site?.colors?.danger || '#7f1d1d';
 <footer class="yb-launch-footer">
   <div class="yb-launch-footer-inner">
     <p class="yb-launch-footer-title">
-      <strong>법무법인 윤빛</strong>
-      <span>ㅣ금융사기 피해회복센터</span>
+      <strong>{site.siteName}</strong>
+      {isRecover && <span>ㅣ금융사기 피해회복센터</span>}
     </p>
 
     <div class="yb-launch-footer-info">
-      <p>광고책임변호사 : 윤수빈 변호사</p>
-      <p>사업자등록번호 : 754-87-03255</p>
-      <p>주소 : 서울특별시 강남구 영동대로 621, 621빌딩 11층</p>
+      <p>상담 연결 : {site.phone} · {site.email}</p>
+      <p>운영 및 상담 연계 : {site.operatorName}</p>
+      {isRecover && <p>광고책임변호사 : {site.responsibleAttorney} · 사업자등록번호 : {site.businessNumber}</p>}
+      {isRecover && <p>주소 : {site.address}</p>}
     </div>
 
     <p class="yb-launch-footer-copy">
-      © 2026 법무법인 윤빛. All rights reserved.
+      © 2026 {site.siteName}. All rights reserved.
     </p>
   </div>
 </footer>
@@ -468,6 +471,19 @@ const danger = site?.colors?.danger || '#7f1d1d';
       transform: translateY(-6vh);
     }
   }
+
+  .launch-base-response .launch-bg { background: radial-gradient(circle at 50% 42%, rgba(40,120,215,.24), transparent 28%), linear-gradient(145deg,#07111f,#0c1f38 56%,#030914); }
+  .launch-base-alert .launch-bg { background: radial-gradient(circle at 50% 42%, rgba(209,75,49,.24), transparent 28%), linear-gradient(145deg,#130907,#2a100b 56%,#090302); }
+  .launch-base-check { color:#13252d; }
+  .launch-base-check .launch-bg { background: radial-gradient(circle at 50% 42%, rgba(20,138,138,.18), transparent 30%), linear-gradient(145deg,#edf7f8,#dfeef1 58%,#f8fbfc); }
+  .launch-base-check .launch-brand h1,.launch-base-check .launch-subtitle { color:#13252d; text-shadow:none; }
+  .launch-base-check .launch-kicker,.launch-base-check .launch-guide { color:rgba(19,37,45,.58); }
+  .launch-base-check .launch-searchbox { background:rgba(255,255,255,.78)!important;border-color:rgba(19,37,45,.16)!important; }
+  .launch-base-check .launch-searchbox input { color:#13252d!important; }
+  .launch-base-case .launch-bg { background: radial-gradient(circle at 50% 42%, rgba(168,121,56,.24), transparent 28%), linear-gradient(145deg,#15110d,#2c2115 56%,#080604); }
+  .launch-base-safe .launch-bg { background: radial-gradient(circle at 50% 42%, rgba(39,168,121,.22), transparent 28%), linear-gradient(145deg,#061410,#0d2a20 56%,#020907); }
+  .launch-base-help .launch-bg { background: radial-gradient(circle at 50% 42%, rgba(102,94,232,.24), transparent 28%), linear-gradient(145deg,#0b0d18,#202044 56%,#05060c); }
+  .launch-base-watch .launch-bg { background: radial-gradient(circle at 50% 42%, rgba(20,169,199,.24), transparent 28%), linear-gradient(145deg,#04121b,#0a3040 56%,#02080c); }
 </style>
 
 <script is:inline>
@@ -484,3 +500,77 @@ const danger = site?.colors?.danger || '#7f1d1d';
     });
   }
 </script>
+
+<style>
+  /* 8개 도메인 발사대 시각 분리 강화 */
+
+  .launch-base-response .launch-bg {
+    background:
+      linear-gradient(120deg,rgba(0,102,255,.18) 0 1px,transparent 1px 76px),
+      radial-gradient(circle at 72% 28%,rgba(125,211,252,.34),transparent 20%),
+      linear-gradient(145deg,#021126,#063a78 58%,#020a17);
+  }
+  .launch-base-response .launch-scene-a { border:1px solid rgba(125,211,252,.28); transform:rotate(12deg) scale(1.2); }
+  .launch-base-response .launch-searchbox button { background:linear-gradient(135deg,#0066ff,#003ea8)!important; }
+
+  .launch-base-alert .launch-bg {
+    background:
+      repeating-linear-gradient(135deg,rgba(255,176,0,.08) 0 12px,transparent 12px 28px),
+      radial-gradient(circle at 50% 38%,rgba(255,45,0,.38),transparent 27%),
+      linear-gradient(145deg,#200100,#5b0a02 58%,#120000);
+  }
+  .launch-base-alert .launch-kicker { color:#ffb000; font-weight:700; }
+  .launch-base-alert .launch-searchbox button { background:linear-gradient(135deg,#ff2d00,#b51d00)!important; }
+
+  .launch-base-check { color:#102a2a; }
+  .launch-base-check .launch-bg {
+    background:
+      radial-gradient(circle at 20% 18%,rgba(0,168,150,.18),transparent 24%),
+      radial-gradient(circle at 82% 75%,rgba(0,109,119,.12),transparent 24%),
+      linear-gradient(145deg,#f7fffc,#ddfaf2 58%,#ffffff);
+  }
+  .launch-base-check .launch-gridline { opacity:.16; filter:invert(1); }
+  .launch-base-check .launch-brand h1 { color:#082f2b; }
+  .launch-base-check .launch-subtitle { color:rgba(16,42,42,.72); }
+  .launch-base-check .launch-searchbox button { background:linear-gradient(135deg,#00a896,#006d77)!important; }
+
+  .launch-base-case .launch-bg {
+    background:
+      linear-gradient(90deg,rgba(244,180,0,.10) 1px,transparent 1px),
+      linear-gradient(rgba(244,180,0,.08) 1px,transparent 1px),
+      radial-gradient(circle at 52% 36%,rgba(244,180,0,.31),transparent 27%),
+      linear-gradient(145deg,#171100,#4e3b00 58%,#0b0800);
+    background-size:auto,64px 64px,64px 64px,auto,auto;
+  }
+  .launch-base-case .launch-brand h1 { color:#fff4b0; }
+  .launch-base-case .launch-searchbox button { background:linear-gradient(135deg,#f4b400,#b77c00)!important;color:#241800!important; }
+
+  .launch-base-safe .launch-bg {
+    background:
+      radial-gradient(ellipse at 50% 120%,rgba(21,196,107,.28),transparent 42%),
+      repeating-radial-gradient(circle at 50% 50%,rgba(158,240,184,.07) 0 2px,transparent 2px 42px),
+      linear-gradient(145deg,#03140b,#07572c 58%,#010904);
+  }
+  .launch-base-safe .launch-searchbox { border-radius:18px!important; }
+  .launch-base-safe .launch-searchbox button { background:linear-gradient(135deg,#15c46b,#08733b)!important; }
+
+  .launch-base-help .launch-bg {
+    background:
+      radial-gradient(circle at 25% 22%,rgba(255,112,215,.26),transparent 22%),
+      radial-gradient(circle at 76% 76%,rgba(181,23,255,.34),transparent 28%),
+      linear-gradient(145deg,#14001e,#4d006b 58%,#09000e);
+  }
+  .launch-base-help .launch-scene-b { border-radius:50%; filter:blur(8px); }
+  .launch-base-help .launch-searchbox button { background:linear-gradient(135deg,#b517ff,#ff3eb5)!important; }
+
+  .launch-base-watch .launch-bg {
+    background:
+      linear-gradient(90deg,transparent 49.7%,rgba(0,212,255,.22) 50%,transparent 50.3%),
+      linear-gradient(transparent 49.7%,rgba(0,212,255,.14) 50%,transparent 50.3%),
+      radial-gradient(circle at 50% 42%,rgba(0,212,255,.28),transparent 25%),
+      linear-gradient(145deg,#001118,#00485a 58%,#00080b);
+    background-size:120px 120px,120px 120px,auto,auto;
+  }
+  .launch-base-watch .launch-brand h1 { text-transform:uppercase; letter-spacing:-.045em; }
+  .launch-base-watch .launch-searchbox button { background:linear-gradient(135deg,#00d4ff,#007a93)!important;color:#00181f!important; }
+</style>

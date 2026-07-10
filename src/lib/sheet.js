@@ -1,5 +1,5 @@
 import { FALLBACK_CASES } from '../data/fallbackCases.js';
-import { normalizeSlug, getStatus } from './utils.js';
+import { normalizeSlug, getStatus, cleanText } from './utils.js';
 
 const SHEET_URL = import.meta.env.SHEET_JSON_URL;
 let cache = { at: 0, rows: null };
@@ -12,9 +12,7 @@ function parseGoogleViz(text) {
   const cols = json.table.cols.map((c) => c.label || c.id);
   return json.table.rows.map((r) => {
     const row = {};
-    r.c.forEach((cell, i) => {
-      row[cols[i]] = cell?.v ?? '';
-    });
+    r.c.forEach((cell, i) => { row[cols[i]] = cell?.v ?? ''; });
     return row;
   });
 }
@@ -30,25 +28,27 @@ function normalizeRows(payload) {
   return [];
 }
 
+function matchesSite(row = {}, site = {}) {
+  const target = cleanText(row.domain || row.siteKey || row.site || '').toLowerCase();
+  if (!target || target === 'all' || target === '*') return true;
+  const keys = [site.siteKey, ...(site.domains || [])].map((v) => String(v).toLowerCase().replace(/^www\./, ''));
+  return keys.includes(target.replace(/^www\./, ''));
+}
+
 export async function getSheetCases() {
   const now = Date.now();
   if (cache.rows && now - cache.at < CACHE_MS) return cache.rows;
-
   if (!SHEET_URL) {
     cache = { at: now, rows: FALLBACK_CASES };
     return FALLBACK_CASES;
   }
-
   try {
     const res = await fetch(SHEET_URL, { headers: { accept: 'application/json,text/plain,*/*' } });
     if (!res.ok) throw new Error(`sheet fetch failed: ${res.status}`);
     const text = await res.text();
     let rows;
-    try {
-      rows = normalizeRows(JSON.parse(text));
-    } catch (_) {
-      rows = parseGoogleViz(text) || [];
-    }
+    try { rows = normalizeRows(JSON.parse(text)); }
+    catch { rows = parseGoogleViz(text) || []; }
     const cleaned = rows
       .map((row) => ({ ...row, slug: normalizeSlug(row.slug || row.caseName || row.mainKeyword) }))
       .filter((row) => row.slug);
@@ -61,13 +61,13 @@ export async function getSheetCases() {
   }
 }
 
-export async function getCaseBySlug(slug) {
+export async function getCaseBySlug(slug, site = {}) {
   const rows = await getSheetCases();
   const normalized = normalizeSlug(slug);
-  return rows.find((row) => normalizeSlug(row.slug) === normalized) || null;
+  return rows.find((row) => normalizeSlug(row.slug) === normalized && matchesSite(row, site)) || null;
 }
 
-export async function getPublishedCases() {
+export async function getPublishedCases(site = {}) {
   const rows = await getSheetCases();
-  return rows.filter((row) => getStatus(row) === 'published');
+  return rows.filter((row) => getStatus(row) === 'published' && matchesSite(row, site));
 }
