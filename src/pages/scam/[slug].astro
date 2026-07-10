@@ -8,10 +8,11 @@ import { getCurrentSite } from '../../config/sites.js';
 import { getCaseBySlug, getSheetDiagnostics } from '../../lib/sheet.js';
 import { getStatus, normalizeSlug } from '../../lib/utils.js';
 import { buildCaseSeo, caseJsonLdGraph } from '../../lib/seo.js';
+import { buildSiteCase } from '../../lib/siteCase.js';
 
 export const prerender = false;
 
-Astro.response.headers.set('x-yb-route-version', '20260710-final');
+Astro.response.headers.set('x-yb-route-version', '20260710-multisite-final');
 Astro.response.headers.set('cache-control', 'no-store, max-age=0');
 
 const site = getCurrentSite(Astro.url.host);
@@ -22,7 +23,8 @@ if (site.siteKey === 'yb-recover') {
   return Astro.redirect('/', 302);
 }
 
-const row = await getCaseBySlug(slug, site);
+const sourceRow = await getCaseBySlug(slug, site);
+const row = sourceRow ? buildSiteCase(sourceRow, site) : null;
 const diagnostics = row ? null : await getSheetDiagnostics(slug, site);
 
 if (!row) Astro.response.status = 404;

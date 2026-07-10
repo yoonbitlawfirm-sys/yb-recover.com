@@ -70,7 +70,8 @@ export function normalizeDomain(value = '') {
 export function matchesSite(row = {}, site = {}) {
   const target = normalizeDomain(row.domain || row.siteKey || row.site || '');
 
-  if (!target || target === 'all' || target === '*') return true;
+  // yb-recover 또는 all 한 줄이 7개 웹배포 도메인의 공통 원본입니다.
+  if (!target || target === 'all' || target === '*' || target === 'yb-recover') return true;
 
   const acceptedValues = [site.siteKey, ...(site.domains || [])]
     .map(normalizeDomain)

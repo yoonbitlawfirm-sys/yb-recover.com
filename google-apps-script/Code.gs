@@ -1,5 +1,6 @@
 /**
- * YB 8개 도메인 웹문서 CMS
+ * YB 통합 웹문서 CMS
+ * WEB_CONTENT 한 줄을 yb-recover 원본으로 관리하면 나머지 7개 도메인에 동시에 반영됩니다.
  * 시트 이름: WEB_CONTENT
  * 웹 앱 배포 후 URL을 Vercel 환경변수 SHEET_JSON_URL에 입력합니다.
  */
@@ -17,10 +18,10 @@ function onOpen() {
     .createMenu('웹문서 관리')
     .addItem('초기 시트 만들기', 'setupWebContentSheet')
     .addSeparator()
-    .addItem('선택 행 발행', 'publishSelectedRows')
-    .addItem('선택 행 비공개', 'draftSelectedRows')
-    .addItem('선택 행 삭제(410)', 'deleteSelectedRows')
-    .addItem('선택 행 복구', 'restoreSelectedRows')
+    .addItem('선택 행 전체 발행(7개)', 'publishSelectedRows')
+    .addItem('선택 행 전체 비공개', 'draftSelectedRows')
+    .addItem('선택 행 전체 삭제(410)', 'deleteSelectedRows')
+    .addItem('선택 행 전체 복구', 'restoreSelectedRows')
     .addToUi();
 }
 
@@ -37,7 +38,7 @@ function setupWebContentSheet() {
     .setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(['draft','published','noindex','disabled','deleted','redirect'], true).build());
   sheet.getRange(2, domainCol, Math.max(sheet.getMaxRows() - 1, 1), 1)
     .setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList([
-      'yb-recover','yb-response','yb-alert','yb-check','yb-case','yb-safe','yb-help','yb-watch','all'
+      'yb-recover','all'
     ], true).build());
 }
 
@@ -51,7 +52,8 @@ function doGet(e) {
   if (domain) {
     rows = rows.filter(row => {
       const value = String(row.domain || '').trim().toLowerCase();
-      return value === domain || value === 'all';
+      // yb-recover는 7개 도메인에 동시에 공급되는 공통 원본입니다.
+      return value === domain || value === 'all' || value === 'yb-recover';
     });
   }
 
@@ -86,9 +88,12 @@ function setSelectedStatus_(status) {
   const statusCol = HEADERS.indexOf('status') + 1;
   const updatedCol = HEADERS.indexOf('updatedAt') + 1;
   const publishedCol = HEADERS.indexOf('publishedAt') + 1;
+  const domainCol = HEADERS.indexOf('domain') + 1;
   const now = Utilities.formatDate(new Date(), 'Asia/Seoul', 'yyyy-MM-dd');
   for (let row = range.getRow(); row < range.getRow() + range.getNumRows(); row++) {
     if (row === 1) continue;
+    // 비어 있거나 과거 개별 도메인 값이어도 통합 원본으로 전환합니다.
+    sheet.getRange(row, domainCol).setValue('yb-recover');
     sheet.getRange(row, statusCol).setValue(status);
     sheet.getRange(row, updatedCol).setValue(now);
     if (status === 'published' && !sheet.getRange(row, publishedCol).getValue()) sheet.getRange(row, publishedCol).setValue(now);
