@@ -1,0 +1,45 @@
+YB 웹배포 CMS 최종 정상화 안내
+
+확인된 실제 원인
+1) 배포된 /scam/[slug] 코드는 예전 버전이어서 row가 없으면 plain text 404를 즉시 반환했습니다.
+2) 압축파일 안의 .vercel/output은 현재 Git HEAD가 아니라 예전 소스(getCaseBySlug + return new Response)로 빌드된 낡은 산출물입니다.
+3) src/pages/scam/index.astro와 src/pages/scam/[slug].astro에 같은 대형 코드가 중복되어 라우트 구조가 혼란스러웠습니다.
+4) CMS 실패 원인을 화면에서 확인할 방법이 없어 환경변수/Apps Script/도메인 매칭 중 어디서 실패했는지 구분할 수 없었습니다.
+
+이번 수정
+- /scam/[slug]를 단일 정상 라우트로 정리
+- yb-recover.com은 /scam/* 접근 시 메인으로 이동
+- 나머지 7개 도메인은 현재 host의 siteKey와 시트 domain을 비교
+- yb-response / yb-response.com / www.yb-response.com을 같은 값으로 정규화
+- SHEET_JSON_URL 앞뒤 따옴표와 공백 자동 제거
+- Apps Script JSON/Google Visualization 응답 모두 처리
+- CMS 오류가 나도 plain text가 아니라 진단정보가 포함된 정상 HTML 출력
+- /api/cms-health?slug=test-page 진단 API 추가
+- 응답 헤더 x-yb-route-version: 20260710-final 추가
+
+적용 순서
+1. 이 압축파일의 파일들을 기존 프로젝트에 덮어쓰기
+2. VS Code 터미널:
+   git add .
+   git commit -m "final fix web distribution cms"
+   git push origin main
+3. Vercel Deployments에서 방금 커밋이 Production / Ready인지 확인
+4. 아래 주소 먼저 확인:
+   https://yb-response.com/api/cms-health?slug=test-page
+5. 정상 기대값:
+   "build": "20260710-final"
+   "envConfigured": true
+   "source": "sheet"
+   "matched": true
+6. 그다음 확인:
+   https://yb-response.com/scam/test-page?v=final
+
+Apps Script Code.gs도 수정했으므로 Google Apps Script에서 새 버전으로 다시 배포해야 합니다.
+Deploy > Manage deployments > Edit > Version: New version > Deploy
+웹앱 실행 사용자: 나
+액세스 권한: 모든 사용자
+
+중요
+- .vercel 폴더는 배포 산출물이라 Git에 올리면 안 됩니다.
+- node_modules도 올리지 않습니다.
+- Vercel 환경변수 이름은 SHEET_JSON_URL 그대로 사용합니다.

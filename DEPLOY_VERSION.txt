@@ -1,0 +1,4 @@
+YB CMS FINAL FIX
+Build: 20260710-final
+Expected route header: x-yb-route-version: 20260710-final
+Health check: /api/cms-health?slug=test-page

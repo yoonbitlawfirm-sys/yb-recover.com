@@ -41,9 +41,31 @@ function setupWebContentSheet() {
     ], true).build());
 }
 
-function doGet() {
-  const rows = getRows_();
-  return ContentService.createTextOutput(JSON.stringify({ data: rows, generatedAt: new Date().toISOString() }))
+function doGet(e) {
+  const params = (e && e.parameter) || {};
+  const domain = String(params.domain || '').trim().toLowerCase();
+  const slug = String(params.slug || '').trim().toLowerCase();
+
+  let rows = getRows_();
+
+  if (domain) {
+    rows = rows.filter(row => {
+      const value = String(row.domain || '').trim().toLowerCase();
+      return value === domain || value === 'all';
+    });
+  }
+
+  if (slug) {
+    rows = rows.filter(row => String(row.slug || '').trim().toLowerCase() === slug);
+  }
+
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      ok: true,
+      data: rows,
+      count: rows.length,
+      generatedAt: new Date().toISOString()
+    }))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
