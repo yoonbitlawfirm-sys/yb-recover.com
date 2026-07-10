@@ -1,8 +1,5 @@
 ---
 import '../../styles/global.css';
-import Header from '../../components/Header.astro';
-import Footer from '../../components/Footer.astro';
-import FloatingCTA from '../../components/FloatingCTA.astro';
 import CasePage from '../../components/CasePage.astro';
 import { getCurrentSite } from '../../config/sites.js';
 import { getCaseBySlug, getSheetDiagnostics } from '../../lib/sheet.js';
@@ -12,7 +9,7 @@ import { buildSiteCase } from '../../lib/siteCase.js';
 
 export const prerender = false;
 
-Astro.response.headers.set('x-yb-route-version', '20260710-multisite-final-v4');
+Astro.response.headers.set('x-yb-route-version', '20260710-design-restored-final');
 Astro.response.headers.set('cache-control', 'no-store, max-age=0');
 
 const site = getCurrentSite(Astro.url.host);
@@ -87,38 +84,27 @@ const favicon = '/images/favicon.png?v=20260710';
   </head>
 
   <body>
-    <div class="yb-page">
-      <Header site={site} />
-
-      {row && status !== 'deleted' && status !== 'disabled' && status !== 'draft' ? (
-        <main>
-          <CasePage site={site} row={row} />
-        </main>
-      ) : (
-        <main class="yb-cms-error">
-          <section>
-            <span>{status === 'deleted' ? '410' : '404'}</span>
-            <h1>{status === 'deleted' ? '삭제된 페이지입니다.' : '페이지를 찾을 수 없습니다.'}</h1>
-            <p>
-              {status === 'draft' || status === 'disabled'
-                ? '현재 비공개 상태인 페이지입니다.'
-                : '등록된 주소와 게시 상태를 다시 확인해 주세요.'}
-            </p>
-            {diagnostics && (
-              <small>
-                CMS: {diagnostics.source} · 문서 {diagnostics.rowCount}개 · 도메인 {diagnostics.siteKey} · 슬러그 {diagnostics.slug}
-                {diagnostics.error ? ` · ${diagnostics.error}` : ''}
-              </small>
-            )}
-          </section>
-        </main>
-      )}
-
-      <Footer site={site} />
-      {row && status !== 'deleted' && status !== 'disabled' && status !== 'draft' && (
-        <FloatingCTA site={site} label={`${seo.name} 피해 상담`} />
-      )}
-    </div>
+    {row && status !== 'deleted' && status !== 'disabled' && status !== 'draft' ? (
+      <CasePage site={site} row={row} />
+    ) : (
+      <main class="yb-cms-error">
+        <section>
+          <span>{status === 'deleted' ? '410' : '404'}</span>
+          <h1>{status === 'deleted' ? '삭제된 페이지입니다.' : '페이지를 찾을 수 없습니다.'}</h1>
+          <p>
+            {status === 'draft' || status === 'disabled'
+              ? '현재 비공개 상태인 페이지입니다.'
+              : '등록된 주소와 게시 상태를 다시 확인해 주세요.'}
+          </p>
+          {diagnostics && (
+            <small>
+              CMS: {diagnostics.source} · 문서 {diagnostics.rowCount}개 · 도메인 {diagnostics.siteKey} · 슬러그 {diagnostics.slug}
+              {diagnostics.error ? ` · ${diagnostics.error}` : ''}
+            </small>
+          )}
+        </section>
+      </main>
+    )}
 
     <style>
       .yb-cms-error {

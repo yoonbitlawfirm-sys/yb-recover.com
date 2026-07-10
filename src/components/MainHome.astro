@@ -496,7 +496,11 @@ const isRecover = site?.siteKey === 'yb-recover';
 
       const keyword = (input.value || '').replace(/\s+/g, '').trim() || '출금거부';
 
-      location.href = `/scam/${encodeURIComponent(keyword)}`;
+      const encodedKeyword = encodeURIComponent(keyword);
+      const host = window.location.hostname.replace(/^www\./, '').toLowerCase();
+      location.href = host === 'yb-recover.com'
+        ? `https://yb-response.com/scam/${encodedKeyword}`
+        : `/scam/${encodedKeyword}`;
     });
   }
 </script>

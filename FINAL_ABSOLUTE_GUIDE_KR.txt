@@ -1,0 +1,20 @@
+최종 적용 순서
+
+1. 이 프로젝트 전체를 기존 yb-recover.com 프로젝트에 덮어씁니다.
+2. google-apps-script/Code.gs 전체를 Apps Script에 붙여넣습니다.
+3. Apps Script 저장 후 기존 웹앱 배포를 New version으로 갱신합니다.
+4. Vercel 환경변수 SHEET_JSON_URL은 실제 /exec 주소를 유지합니다.
+5. 아래 명령으로 배포합니다.
+
+   git add .
+   git commit -m "absolute final launcher and cms"
+   git push origin main
+
+확인 항목
+- yb-recover.com 검색창 키워드 입력 → yb-response.com/scam/키워드 이동
+- 발사대 하단 플로팅 없음
+- 발사포 상단/하단 플로팅 없음
+- 발사포 전화·카카오 버튼은 본문 안 일반 버튼으로만 존재
+- 상담 신청은 /api/send-mail 사용
+- 시트 탭 이름: 네이버 웹
+- 도메인별 문구·SEO·색감 분리
