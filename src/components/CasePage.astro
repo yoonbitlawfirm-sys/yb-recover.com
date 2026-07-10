@@ -7,73 +7,83 @@ const { site = {}, row = {} } = Astro.props;
 const name = cleanText(row.caseName || row.mainKeyword || row.slug || '금융사기');
 
 const theme = site?.theme || 'main';
-const accent = site?.colors?.accent || '#1e4b9b';
-const gold = site?.colors?.gold || '#c9a45c';
-const danger = site?.colors?.danger || '#7f1d1d';
 
 const kakao = site?.kakao || 'https://open.kakao.com/o/s9AiNHzi';
+const phone = site?.phone || '010-2175-4252';
+const tel = site?.tel || phone.replace(/\D/g, '');
+const telHref = `tel:${tel}`;
+const logo = site?.logo || '/images/yoonbit-logo-cutout.png';
 
 const recoveryChecks = [
   [
     '01',
-    '자금세탁 이동 경로',
-    '피해금이 어느 계좌로, 어떤 명목으로, 언제 송금됐는지 확인합니다. 대포통장, 가상계좌, 지갑주소로 분산된 자금 흐름을 정리해 법적 조치로 원금 회수 가능성을 높입니다.'
+    '입금 흐름 확인',
+    '입금 계좌, 예금주, 지갑주소, 송금 시점과 명목을 먼저 정리합니다. 대포통장을 거쳐 자금이 분산되기 전, 자금 흐름을 잡는 것이 회수 가능성 검토의 출발점입니다.'
   ],
   [
     '02',
     '상대방 특정 단서',
-    '담당자 이름, 연락처, 대화방, 사이트 주소, 예금주, 계좌정보를 확인합니다. 상대방을 특정할 단서가 남아 있어야 고소, 가압류, 손해배상 절차를 빠르게 검토할 수 있습니다.'
+    '담당자 이름, 연락처, 대화방, 사이트 주소, 입금 계좌, 예금주 등 상대방을 특정할 단서가 남아 있는지 확인합니다. 단서가 사라지기 전 보존하는 것이 중요합니다.'
   ],
   [
     '03',
-    '법적 회수 조치',
-    '지급정지, 고소, 가압류, 손해배상, 합의 가능성을 함께 검토합니다. 단순 신고가 아니라 원금 회수 가능성을 높이는 절차 중심으로 대응합니다.'
+    '법적 대응 가능성',
+    '자금 추적, 지급정지, 고소, 가압류, 손해배상, 합의 가능성을 함께 검토합니다. 단순 신고에 그치지 않고 원금 회수 가능성을 높이는 방향으로 대응합니다.'
+  ]
+];
+
+const warningCards = [
+  [
+    '01',
+    '출금 지연',
+    '출금 신청 후 처리 중이라는 답변만 반복되거나 승인 시간이 계속 미뤄지는 경우입니다. 이 단계에서 계좌·사이트 단서가 사라지기 전 자료 보존이 필요합니다.'
+  ],
+  [
+    '02',
+    '추가 입금 요구',
+    '세금, 인증비, 보증금, 수수료, 계좌검증비 등의 명목으로 추가 송금을 요구받는 경우입니다. 추가 입금 전 피해 정황부터 확인해야 합니다.'
+  ],
+  [
+    '03',
+    '연락두절',
+    '담당자 답변이 늦어지거나 대화방이 사라지고 사이트 접속이 제한되는 경우입니다. 연락두절 전후의 자료가 대응 방향을 좌우할 수 있습니다.'
   ]
 ];
 
 const proofCards = [
   [
     '01',
-    '비식별 합의 진행 사례',
-    '의뢰인 정보와 사건 특정 정보는 제외하고, 입금 흐름과 대응 방향을 기준으로 실제 진행 경험을 설명합니다.'
+    '자료 기준 검토',
+    '입금내역, 대화자료, 사이트 화면, 계좌정보를 기준으로 현재 피해 유형과 대응 우선순위를 정리합니다.'
   ],
   [
     '02',
-    '자료 기준 대응',
-    '입금내역, 대화자료, 사이트 화면, 계좌정보를 기준으로 합의 가능성과 민·형사 절차를 함께 검토합니다.'
+    '민·형사 절차 검토',
+    '상대방 특정 가능성과 자금 이동 흐름을 기준으로 형사 고소, 지급정지, 가압류, 손해배상 가능성을 함께 확인합니다.'
   ],
   [
     '03',
-    '원금 회수 가능성 검토',
-    '대포통장, 가상계좌, 지갑주소 등 자금 이동 경로를 확인하고 필요한 법적 조치로 원금 회수 가능성을 높입니다.'
+    '회수 가능성 판단',
+    '대포통장을 통한 자금세탁 가능성과 남아 있는 증거를 기준으로 회수 가능성을 높일 대응 방향을 검토합니다.'
   ]
-];
-
-const liveCases = [
-  ['서울', '출금 지연 후 세금 요구'],
-  ['부산', '추가 인증비 요구'],
-  ['인천', '담당자 연락두절'],
-  ['대전', '계좌 변경 후 재입금 요구'],
-  ['광주', '환불팀 2차 접근'],
-  ['수원', '지갑주소 입금 후 출금 제한']
 ];
 
 const faqs = [
   [
-    '이미 입금한 원금을 돌려받을 수 있나요?',
-    `회수 가능성은 입금 계좌, 상대방 특정 가능성, 증거자료 상태에 따라 달라집니다. 윤빛은 ${name} 관련 현재 남아 있는 자료를 기준으로 원금 회수 가능성부터 확인합니다.`
+    '이미 입금한 돈을 돌려받을 수 있나요?',
+    `회수 가능성은 입금 계좌, 자금 이동 속도, 상대방 특정 가능성, 증거자료 상태에 따라 달라집니다. 윤빛은 ${name} 관련 남아 있는 자료를 기준으로 지급정지·고소·가압류·손해배상 등 대응 가능성부터 확인합니다.`
   ],
   [
     '경찰 신고만 하면 원금이 돌아오나요?',
-    '경찰 신고는 수사의 출발점입니다. 원금 회수 가능성을 높이기 위해서는 입금 흐름, 상대방 특정 단서, 민·형사 절차 가능성을 함께 검토해야 합니다.'
+    '경찰 신고는 수사의 출발점입니다. 원금 회수 가능성을 높이려면 입금 흐름, 대포통장 여부, 상대방 특정 단서, 민·형사 절차 가능성을 함께 검토해야 합니다.'
   ],
   [
     '추가 입금을 하면 출금이 가능하다고 합니다.',
-    '세금, 인증비, 보증금 명목의 추가 입금 요구는 위험 신호일 수 있습니다. 추가 송금 전 현재 정황과 자금 이동 경로를 먼저 확인해야 합니다.'
+    '세금, 인증비, 보증금, 계좌검증비 명목의 추가 입금 요구는 위험 신호일 수 있습니다. 추가 송금 전 현재 정황과 자료 상태를 먼저 확인해야 합니다.'
   ],
   [
     '자료가 부족해도 상담 가능한가요?',
-    '가능합니다. 입금내역, 대화자료, 사이트 화면, 계좌정보 중 일부만 있어도 현재 대응 방향을 먼저 확인할 수 있습니다.'
+    '가능합니다. 입금내역, 대화자료, 사이트 화면, 계좌정보 중 일부만 있어도 피해 정황을 정리하고 우선 대응 방향을 검토할 수 있습니다.'
   ]
 ];
 
@@ -93,8 +103,8 @@ const faqSchema = {
 const howToSchema = {
   '@context': 'https://schema.org',
   '@type': 'HowTo',
-  name: `${name} 피해 의심 시 원금 회수 가능성 확인 방법`,
-  description: `${name} 피해가 의심될 때 입금내역, 대화자료, 계좌정보를 기준으로 원금 회수 가능성을 확인하는 절차입니다.`,
+  name: `${name} 피해 의심 시 대응 가능성 확인 방법`,
+  description: `${name} 피해가 의심될 때 입금내역, 대화자료, 계좌정보를 기준으로 대응 가능성을 확인하는 절차입니다.`,
   totalTime: 'PT5M',
   step: [
     {
@@ -113,7 +123,7 @@ const howToSchema = {
       '@type': 'HowToStep',
       position: 3,
       name: '법적 조치 검토',
-      text: '지급정지, 고소, 가압류, 손해배상, 합의 가능성을 함께 검토해 원금 회수 가능성을 높이는 방향으로 대응합니다.'
+      text: '지급정지, 고소, 가압류, 손해배상, 합의 가능성을 함께 검토해 대응 방향을 정리합니다.'
     }
   ]
 };
@@ -121,34 +131,173 @@ const howToSchema = {
 const webPageSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebPage',
-  name: `${name} 피해 정황 확인 | 법무법인 윤빛`,
-  description: `${name} 관련 입금을 하신 상황이라면 출금 지연, 추가 입금 요구, 연락두절 정황을 기준으로 원금 회수 가능성부터 확인합니다.`,
+  name: `${name} 사칭 사기 주의 | 법무법인 윤빛`,
+  description: `${name} 관련 입금을 하신 상황이라면 출금 지연, 추가 입금 요구, 연락두절 정황을 기준으로 빠른 법적 대응 가능성을 확인합니다.`,
   inLanguage: 'ko-KR',
   about: {
     '@type': 'Thing',
-    name: `${name} 피해 정황 및 원금 회수 가능성`
+    name: `${name} 피해 정황 및 대응 가능성`
   }
 };
 ---
 
+<style is:global>
+  header,
+  nav,
+  .site-header,
+  .yb-header,
+  .global-header,
+  .main-header,
+  .top-header,
+  .navbar,
+  .gnb,
+  .header,
+  .header-wrap,
+  .nav-wrap,
+  .navigation,
+  .desktop-nav,
+  .mobile-nav,
+  .top-floating,
+  .top-fixed,
+  .fixed-top,
+  .floating-top,
+  .reservation-bar,
+  .consult-reserve,
+  .reserve-button,
+  .bottom-floating,
+  .floating-cta,
+  .bottom-cta,
+  .sticky-cta,
+  .fixed-cta,
+  .mobile-cta,
+  .consult-floating,
+  .floating-consult,
+  .quick-consult,
+  .quick-cta,
+  .cta-fixed,
+  .fixed-bottom,
+  .bottom-bar,
+  .floating-bar,
+  .contact-floating,
+  .floating-bottom,
+  .bottom-consult,
+  .consult-bar,
+  .sticky-bottom,
+  .floating-call,
+  .call-floating,
+  .fixed-consult-bar,
+  .floating-actions,
+  .fixed-actions,
+  .fixed-contact,
+  .floating-contact,
+  .bottom-buttons,
+  .bottom-button-wrap,
+  .bottom-action-bar,
+  .bottom-fixed-cta,
+  .mobile-bottom-fixed,
+  .mobile-bottom-cta,
+  .mobile-fixed-bottom,
+  .quick-buttons,
+  .quick-action-buttons,
+  .call-kakao-floating,
+  .call-kakao-bar,
+  .contact-actions,
+  .contact-action-bar,
+  .tel-kakao-bar,
+  .phone-kakao-bar {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+
+  footer:not(.yb-shot-footer),
+  .site-footer,
+  .global-footer,
+  .main-footer,
+  .footer,
+  .footer-wrap,
+  .copyright,
+  .page-footer {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden;
+    background: #02050b;
+    font-family:
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Noto Sans KR",
+      sans-serif;
+  }
+</style>
+
 <style>
   .yb-shot-page {
-    --yb-shot-accent: var(--yb-accent, #1e4b9b);
-    --yb-shot-gold: var(--yb-gold, #c9a45c);
-    --yb-shot-danger: var(--yb-danger, #7f1d1d);
     min-height: 100vh;
     background: #02050b;
-    color: #fff;
-    font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #ffffff;
+    font-family:
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Noto Sans KR",
+      sans-serif;
     overflow-x: hidden;
+    padding-bottom: 92px;
   }
 
   .yb-shot-page * {
     box-sizing: border-box;
   }
 
+  .yb-shot-back {
+    position: absolute;
+    top: 22px;
+    left: 22px;
+    z-index: 50;
+    height: 42px;
+    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(4, 8, 16, 0.62);
+    color: rgba(255, 255, 255, 0.72);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.24);
+  }
+
+  .yb-shot-back svg {
+    width: 16px;
+    height: 16px;
+  }
+
   .yb-shot-inner {
-    width: min(1120px, calc(100% - 40px));
+    width: min(1120px, calc(100% - 44px));
     margin: 0 auto;
   }
 
@@ -161,8 +310,8 @@ const webPageSchema = {
     overflow: hidden;
     isolation: isolate;
     background:
-      radial-gradient(circle at 50% 24%, rgba(36, 82, 176, 0.23), transparent 34%),
-      linear-gradient(135deg, #02050b 0%, #030814 36%, #061735 68%, #02050b 100%);
+      radial-gradient(circle at 72% 68%, rgba(31, 67, 142, 0.055), transparent 34%),
+      linear-gradient(135deg, #02050b 0%, #040914 42%, #07101d 72%, #02050b 100%);
   }
 
   .yb-shot-hero::before {
@@ -171,8 +320,8 @@ const webPageSchema = {
     inset: 0;
     z-index: 0;
     background:
-      linear-gradient(90deg, rgba(0, 0, 0, 0.72), transparent 28%, transparent 72%, rgba(0, 0, 0, 0.62)),
-      linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.42));
+      linear-gradient(90deg, rgba(0, 0, 0, 0.78), transparent 31%, transparent 69%, rgba(0, 0, 0, 0.68)),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.48));
     pointer-events: none;
   }
 
@@ -182,10 +331,10 @@ const webPageSchema = {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
-    background-size: 82px 82px;
-    opacity: 0.36;
+      linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+    background-size: 84px 84px;
+    opacity: 0.34;
     pointer-events: none;
   }
 
@@ -199,177 +348,266 @@ const webPageSchema = {
 
   .yb-shot-panel-a {
     left: 0;
-    top: 0;
-    width: 31vw;
-    height: 52vh;
+    top: 24%;
+    width: 22vw;
+    height: 45vh;
     background:
-      linear-gradient(145deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.006)),
-      linear-gradient(180deg, rgba(13, 16, 25, 0.96), rgba(3, 6, 13, 0.98));
+      linear-gradient(145deg, rgba(255, 255, 255, 0.032), rgba(255, 255, 255, 0.004)),
+      linear-gradient(180deg, rgba(8, 15, 31, 0.82), rgba(4, 8, 16, 0.96));
+    border: 1px solid rgba(255, 255, 255, 0.035);
+    animation: ybPanelDriftA 9s ease-in-out infinite;
   }
 
   .yb-shot-panel-b {
     right: 0;
-    top: 0;
-    width: 69vw;
-    height: 52vh;
+    top: 22%;
+    width: 24vw;
+    height: 38vh;
     background:
-      radial-gradient(circle at 50% 38%, rgba(36, 88, 190, 0.16), transparent 44%),
-      linear-gradient(180deg, rgba(9, 31, 78, 0.9), rgba(5, 17, 43, 0.94));
+      radial-gradient(circle at 50% 40%, rgba(31, 67, 142, 0.12), transparent 45%),
+      linear-gradient(180deg, rgba(8, 20, 47, 0.9), rgba(5, 10, 20, 0.94));
+    border: 1px solid rgba(255, 255, 255, 0.035);
+    animation: ybPanelDriftB 10s ease-in-out infinite;
   }
 
   .yb-shot-panel-c {
-    right: 0;
+    left: 34%;
     bottom: 0;
-    width: 69vw;
-    height: 25vh;
+    width: 32vw;
+    height: 24vh;
     background:
-      radial-gradient(circle at 48% 42%, rgba(30, 76, 174, 0.14), transparent 48%),
-      linear-gradient(180deg, rgba(7, 28, 72, 0.82), rgba(4, 12, 31, 0.96));
-  }
-
-  .yb-shot-menu {
-    position: absolute;
-    top: 30px;
-    left: 36px;
-    z-index: 10;
-    width: 31px;
-    height: 24px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
-
-  .yb-shot-menu span {
-    display: block;
-    width: 31px;
-    height: 2px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.9);
+      radial-gradient(circle at 50% 44%, rgba(31, 67, 142, 0.08), transparent 48%),
+      linear-gradient(180deg, rgba(10, 22, 46, 0.72), rgba(4, 8, 16, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.035);
+    animation: ybPanelDriftC 11s ease-in-out infinite;
   }
 
   .yb-shot-hero-content {
     position: relative;
     z-index: 3;
-    width: min(660px, calc(100% - 40px));
+    width: min(720px, calc(100% - 40px));
     margin: 0 auto;
     text-align: center;
     transform: translateY(-2vh);
+    animation: ybHeroRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .yb-shot-logo-wrap {
+    position: relative;
+    width: 176px;
+    height: 176px;
+    margin: 0 auto 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(4, 8, 16, 0.58);
+    border: 1px solid rgba(255, 255, 255, 0.095);
+    box-shadow:
+      0 26px 62px rgba(0, 0, 0, 0.36),
+      0 0 0 1px rgba(201, 164, 92, 0.055),
+      inset 0 1px 0 rgba(255, 255, 255, 0.055);
+    backdrop-filter: blur(16px);
+    animation: ybLogoFloat 5.8s ease-in-out infinite;
+  }
+
+  .yb-shot-logo-wrap::before {
+    content: "";
+    position: absolute;
+    inset: -15px;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 164, 92, 0.16);
+    background: radial-gradient(circle, rgba(201, 164, 92, 0.075), transparent 62%);
+    opacity: 0.72;
+    animation: ybSoftPulse 3.8s ease-in-out infinite;
+  }
+
+  .yb-shot-logo-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 17px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+  }
+
+  .yb-shot-logo {
+    position: relative;
+    z-index: 1;
+    width: 158px;
+    height: 158px;
+    max-width: 158px;
+    max-height: 158px;
+    object-fit: contain;
+    opacity: 0.98;
+    transform: scale(1.62);
+    transform-origin: center;
+    filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.42));
   }
 
   .yb-shot-kicker {
-    margin: 0 0 14px;
-    color: var(--yb-shot-gold);
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.13em;
-    line-height: 1.35;
+    margin: 0 0 18px;
+    color: rgba(201, 164, 92, 0.82);
+    font-size: clamp(13px, 1.62vw, 16px);
+    font-weight: 500;
+    letter-spacing: 0.26em;
+    line-height: 1.45;
     word-break: keep-all;
+    text-align: center;
   }
 
   .yb-shot-hero h1,
   .yb-shot-head h2,
   .yb-shot-copy h2 {
     margin: 0;
-    color: #fff;
-    font-family: "Noto Serif KR", "Song Myung", "Nanum Myeongjo", Georgia, serif;
+    color: rgba(255, 255, 255, 0.96);
     font-weight: 500;
-    letter-spacing: -0.075em;
+    letter-spacing: -0.065em;
     word-break: keep-all;
+    text-align: center;
   }
 
   .yb-shot-hero h1 {
-    font-size: clamp(42px, 7vw, 68px);
+    font-size: clamp(38px, 5.8vw, 62px);
     line-height: 1.12;
-    text-shadow: 0 8px 34px rgba(0, 0, 0, 0.55);
+  }
+
+  .yb-shot-hero h1 .yb-shot-title-line {
+    display: block;
+    white-space: nowrap;
   }
 
   .yb-shot-hero-copy {
-    margin: 22px auto 0;
-    color: rgba(255, 255, 255, 0.78);
-    font-size: 15px;
-    font-weight: 350;
-    line-height: 1.72;
+    width: min(92vw, 620px);
+    margin: 24px auto 0;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: clamp(15px, 1.7vw, 18px);
+    font-weight: 300;
+    line-height: 1.75;
+    letter-spacing: -0.035em;
     word-break: keep-all;
+    text-align: center;
   }
 
   .yb-shot-hero-actions {
     width: min(520px, 100%);
-    margin: 30px auto 0;
+    margin: 34px auto 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 9px;
+    gap: 10px;
   }
 
   .yb-shot-action {
-    min-height: 50px;
+    position: relative;
+    overflow: hidden;
+    min-height: 52px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0 14px;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 800;
+    padding: 0 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    color: rgba(255, 255, 255, 0.86);
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.035em;
     text-decoration: none;
-    background: rgba(255, 255, 255, 0.055);
-    backdrop-filter: blur(10px);
+    background: rgba(4, 8, 16, 0.66);
+    box-shadow:
+      0 18px 50px rgba(0, 0, 0, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    backdrop-filter: blur(16px);
+    transition:
+      transform 0.18s ease,
+      background 0.18s ease,
+      border-color 0.18s ease;
+  }
+
+  .yb-shot-action::before,
+  .yb-shot-fixed-action::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 48%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+    transform: skewX(-18deg);
+    transition: left 0.62s ease;
+    pointer-events: none;
+  }
+
+  .yb-shot-action:hover::before,
+  .yb-shot-fixed-action:hover::before {
+    left: 125%;
+  }
+
+  .yb-shot-action:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 20px 54px rgba(0, 0, 0, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.055);
   }
 
   .yb-shot-action.primary {
-    border-color: rgba(201, 164, 92, 0.44);
-    background: linear-gradient(135deg, rgba(201, 164, 92, 0.25), rgba(24, 54, 118, 0.22));
-    color: #f1d48d;
+    border-color: rgba(166, 28, 39, 0.42);
+    background: rgba(166, 28, 39, 0.88);
+    color: #ffffff;
+    box-shadow: 0 14px 34px rgba(139, 18, 28, 0.28);
   }
 
   .yb-shot-section {
     position: relative;
-    padding: 82px 0;
+    padding: 92px 0;
     background:
-      radial-gradient(circle at 82% 10%, rgba(20, 57, 128, 0.12), transparent 34%),
-      linear-gradient(180deg, #02050b 0%, #050916 100%);
+      radial-gradient(circle at 82% 12%, rgba(31, 67, 142, 0.055), transparent 34%),
+      linear-gradient(180deg, #02050b 0%, #050914 100%);
     overflow: hidden;
   }
 
   .yb-shot-section.alt {
     background:
-      radial-gradient(circle at 10% 10%, rgba(201, 164, 92, 0.08), transparent 32%),
-      linear-gradient(180deg, #050916 0%, #02050b 100%);
+      radial-gradient(circle at 12% 10%, rgba(201, 164, 92, 0.038), transparent 32%),
+      linear-gradient(180deg, #050914 0%, #02050b 100%);
   }
 
   .yb-shot-head {
     position: relative;
     z-index: 2;
     text-align: center;
-    margin-bottom: 34px;
+    margin-bottom: 36px;
   }
 
   .yb-shot-head p,
   .yb-shot-copy p {
-    margin: 0 0 12px;
-    color: var(--yb-shot-gold);
+    margin: 0 0 14px;
+    color: rgba(201, 164, 92, 0.82);
     font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.16em;
+    font-weight: 400;
+    letter-spacing: 0.24em;
+    text-align: center;
   }
 
   .yb-shot-head h2,
   .yb-shot-copy h2 {
-    font-size: clamp(28px, 4vw, 44px);
-    line-height: 1.25;
+    font-size: clamp(30px, 4vw, 46px);
+    line-height: 1.26;
   }
 
   .yb-shot-head span,
   .yb-shot-copy span {
     display: block;
-    margin-top: 16px;
+    width: min(100%, 680px);
+    margin: 18px auto 0;
     color: rgba(255, 255, 255, 0.64);
     font-size: 15px;
-    font-weight: 350;
-    line-height: 1.75;
+    font-weight: 300;
+    line-height: 1.78;
+    letter-spacing: -0.035em;
     word-break: keep-all;
+    text-align: center;
   }
 
   .yb-shot-grid-3,
@@ -381,16 +619,15 @@ const webPageSchema = {
     gap: 14px;
   }
 
-  .yb-shot-grid-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
+  .yb-shot-grid-3,
   .yb-shot-proof-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 
   .yb-shot-faq-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
+    width: min(100%, 860px);
+    margin: 0 auto;
   }
 
   .yb-shot-card,
@@ -398,55 +635,99 @@ const webPageSchema = {
   .yb-shot-consult,
   .yb-shot-faq,
   .yb-shot-live {
-    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.105);
     background:
-      linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.012)),
-      rgba(4, 10, 24, 0.74);
-    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
-    backdrop-filter: blur(10px);
+      linear-gradient(145deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.012)),
+      rgba(4, 8, 16, 0.72);
+    box-shadow:
+      0 24px 70px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(14px);
   }
 
   .yb-shot-card,
-  .yb-shot-mini,
-  .yb-shot-faq {
+  .yb-shot-mini {
+    position: relative;
+    overflow: hidden;
     display: block;
-    min-height: 185px;
-    padding: 25px 23px;
+    min-height: 190px;
+    padding: 26px 24px;
     color: inherit;
     text-decoration: none;
+    transition:
+      transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.34s ease,
+      background 0.34s ease,
+      box-shadow 0.34s ease;
+  }
+
+  .yb-shot-card::before,
+  .yb-shot-mini::before,
+  .yb-shot-consult::before,
+  .yb-shot-live::before,
+  .yb-shot-faq::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 18% 0%, rgba(201, 164, 92, 0.075), transparent 38%);
+    opacity: 0;
+    transition: opacity 0.32s ease;
+    pointer-events: none;
+  }
+
+  .yb-shot-card:hover,
+  .yb-shot-mini:hover {
+    transform: translateY(-6px);
+    border-color: rgba(201, 164, 92, 0.22);
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.014)),
+      rgba(5, 10, 20, 0.78);
+    box-shadow:
+      0 32px 86px rgba(0, 0, 0, 0.32),
+      0 0 0 1px rgba(201, 164, 92, 0.04),
+      inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  }
+
+  .yb-shot-card:hover::before,
+  .yb-shot-mini:hover::before,
+  .yb-shot-consult:hover::before,
+  .yb-shot-live:hover::before,
+  .yb-shot-faq:hover::before {
+    opacity: 1;
   }
 
   .yb-shot-card i,
-  .yb-shot-mini i,
-  .yb-shot-faq i {
+  .yb-shot-mini i {
     display: block;
-    margin-bottom: 24px;
-    color: var(--yb-shot-gold);
+    margin-bottom: 22px;
+    color: rgba(201, 164, 92, 0.86);
     font-style: normal;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.12em;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
   }
 
   .yb-shot-card strong,
-  .yb-shot-mini strong,
-  .yb-shot-faq strong {
+  .yb-shot-mini strong {
     display: block;
     margin-bottom: 12px;
-    color: #fff;
+    color: rgba(255, 255, 255, 0.94);
     font-size: 21px;
-    font-weight: 800;
-    letter-spacing: -0.045em;
-    line-height: 1.25;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1.3;
   }
 
   .yb-shot-card p,
-  .yb-shot-mini p,
-  .yb-shot-faq p {
+  .yb-shot-mini p {
     margin: 0;
-    color: rgba(255, 255, 255, 0.62);
+    color: rgba(255, 255, 255, 0.6);
     font-size: 14px;
-    line-height: 1.7;
+    font-weight: 300;
+    line-height: 1.72;
+    letter-spacing: -0.035em;
     word-break: keep-all;
   }
 
@@ -457,6 +738,10 @@ const webPageSchema = {
     grid-template-columns: 0.92fr 1.08fr;
     gap: 34px;
     align-items: center;
+  }
+
+  .yb-shot-copy {
+    text-align: center;
   }
 
   .yb-shot-mini-grid,
@@ -470,71 +755,546 @@ const webPageSchema = {
     align-items: center;
     justify-content: center;
     width: fit-content;
-    min-height: 44px;
-    margin-top: 26px;
-    padding: 0 20px;
-    border: 1px solid rgba(201, 164, 92, 0.42);
-    background: rgba(201, 164, 92, 0.08);
-    color: #f1d48d;
+    min-height: 46px;
+    margin: 28px auto 0;
+    padding: 0 22px;
+    border-radius: 999px;
+    border: 1px solid rgba(166, 28, 39, 0.34);
+    background: rgba(166, 28, 39, 0.82);
+    color: #ffffff;
     font-size: 14px;
-    font-weight: 800;
+    font-weight: 400;
+    letter-spacing: -0.035em;
     text-decoration: none;
+    box-shadow: 0 12px 28px rgba(139, 18, 28, 0.22);
   }
 
   .yb-shot-proof-note {
     position: relative;
     z-index: 2;
     margin-top: 18px;
-    padding: 15px 18px;
-    border: 1px solid rgba(201, 164, 92, 0.16);
-    background: rgba(201, 164, 92, 0.055);
-    color: rgba(255, 255, 255, 0.58);
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 1px solid rgba(201, 164, 92, 0.14);
+    background: rgba(201, 164, 92, 0.045);
+    color: rgba(255, 255, 255, 0.52);
     font-size: 12px;
-    line-height: 1.7;
+    font-weight: 300;
+    line-height: 1.72;
+    letter-spacing: -0.025em;
+    word-break: keep-all;
+    text-align: center;
   }
 
   .yb-shot-consult {
     padding: 26px;
   }
 
-  .yb-shot-live {
-    padding: 20px;
+
+  .yb-shot-consult-after {
+    margin: 14px 4px 0;
+    padding: 14px 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(201, 164, 92, 0.14);
+    background: rgba(201, 164, 92, 0.045);
+    color: rgba(255, 255, 255, 0.58);
+    font-size: 12.5px;
+    font-weight: 300;
+    line-height: 1.62;
+    letter-spacing: -0.035em;
+    text-align: center;
+    word-break: keep-all;
   }
 
-  .yb-shot-live h3 {
-    margin: 0 0 14px;
-    color: #fff;
+  .yb-shot-live {
+    position: relative;
+    overflow: hidden;
+    padding: 22px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.105);
+    background:
+      radial-gradient(circle at 78% 0%, rgba(31, 67, 142, 0.095), transparent 36%),
+      linear-gradient(180deg, rgba(7, 12, 24, 0.96), rgba(3, 6, 13, 0.98));
+  }
+
+  .yb-shot-live-head {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 14px;
+    padding-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+  }
+
+  .yb-shot-live-title {
+    width: 100%;
+    text-align: center;
+  }
+
+  .yb-shot-live-title small {
+    display: block;
+    margin-bottom: 7px;
+    color: rgba(201, 164, 92, 0.78);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+  }
+
+  .yb-shot-live-title h3 {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.96);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.055em;
+    line-height: 1.25;
+  }
+
+
+  .yb-shot-live-viewport {
+    position: relative;
+    z-index: 2;
+    height: 432px;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      #000 4%,
+      #000 95%,
+      transparent 100%
+    );
+  }
+
+  :global(.yb-shot-live-list) {
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: grid !important;
+    gap: 12px !important;
+    animation: ybLiveScroll 58s linear infinite;
+  }
+
+  .yb-shot-live:hover :global(.yb-shot-live-list) {
+    animation-play-state: paused;
+  }
+
+  :global(.yb-shot-live-item) {
+    position: relative !important;
+    overflow: hidden !important;
+    min-height: 70px !important;
+    padding: 0 16px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 14px !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.038), rgba(255, 255, 255, 0.012)),
+      rgba(5, 8, 16, 0.78) !important;
+    box-shadow:
+      0 16px 36px rgba(0, 0, 0, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+    transition:
+      transform 0.26s ease,
+      border-color 0.26s ease,
+      background 0.26s ease !important;
+  }
+
+  :global(.yb-shot-live-item::before) {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 18px !important;
+    bottom: 18px !important;
+    width: 2px !important;
+    border-radius: 99px !important;
+    background: rgba(201, 164, 92, 0.62) !important;
+  }
+
+  :global(.yb-shot-live-item:hover) {
+    transform: translateX(4px) !important;
+    border-color: rgba(201, 164, 92, 0.2) !important;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.048), rgba(255, 255, 255, 0.014)),
+      rgba(7, 12, 24, 0.84) !important;
+  }
+
+
+  :global(.yb-shot-live-title-text) {
+    display: block !important;
+    min-width: 0 !important;
+    color: rgba(255, 255, 255, 0.96) !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.05em !important;
+    line-height: 1.35 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  :global(.yb-shot-live-time) {
+    color: rgba(255, 255, 255, 0.44) !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.035em !important;
+    white-space: nowrap !important;
+  }
+
+
+  @keyframes ybLiveScroll {
+    0% {
+      transform: translateY(0);
+    }
+
+    100% {
+      transform: translateY(-50%);
+    }
+  }
+
+  .yb-shot-faq {
+    overflow: hidden;
+  }
+
+  .yb-shot-faq summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 24px 24px;
+    display: grid;
+    grid-template-columns: 44px 1fr 28px;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .yb-shot-faq summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .yb-shot-faq i {
+    color: rgba(201, 164, 92, 0.86);
+    font-style: normal;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.18em;
+  }
+
+  .yb-shot-faq strong {
+    display: block;
+    color: rgba(255, 255, 255, 0.94);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1.35;
+  }
+
+  .yb-shot-faq em {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: end;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.54);
+    font-style: normal;
     font-size: 18px;
+    font-weight: 300;
+  }
+
+  .yb-shot-faq[open] em {
+    transform: rotate(45deg);
+  }
+
+  .yb-shot-faq p {
+    margin: 0;
+    padding: 0 24px 24px 80px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.72;
+    letter-spacing: -0.035em;
+    word-break: keep-all;
+  }
+
+
+  .yb-shot-notice-section {
+    position: relative;
+    z-index: 2;
+    padding: 0 0 72px;
+    background: #02050b;
+  }
+
+  .yb-shot-notice {
+    position: relative;
+    overflow: hidden;
+    width: min(860px, 100%);
+    margin: 0 auto;
+    padding: 26px 26px 28px;
+    border-radius: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.105);
+    background:
+      radial-gradient(circle at 10% 0%, rgba(201, 164, 92, 0.055), transparent 32%),
+      linear-gradient(145deg, rgba(255, 255, 255, 0.043), rgba(255, 255, 255, 0.01)),
+      rgba(4, 8, 16, 0.82);
+    box-shadow:
+      0 24px 70px rgba(0, 0, 0, 0.24),
+      inset 0 1px 0 rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(14px);
+  }
+
+  .yb-shot-notice::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(90deg, rgba(201, 164, 92, 0.08), transparent 34%, transparent 66%, rgba(31, 67, 142, 0.05));
+    opacity: 0.7;
+  }
+
+  .yb-shot-notice-title {
+    position: relative;
+    z-index: 2;
+    margin: 0 0 18px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: rgba(201, 164, 92, 0.94);
+    font-size: 15px;
     font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1.45;
+  }
+
+  .yb-shot-notice-title::before {
+    content: "";
+    flex: 0 0 auto;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(201, 164, 92, 0.95);
+    box-shadow: 0 0 0 5px rgba(201, 164, 92, 0.09);
+  }
+
+  .yb-shot-notice p {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.66);
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.82;
+    letter-spacing: -0.035em;
+    word-break: keep-all;
+  }
+
+  .yb-shot-notice p + p {
+    margin-top: 15px;
+  }
+
+
+  .yb-shot-footer {
+    position: relative;
+    z-index: 2;
+    padding: 42px 0 118px;
+    background:
+      radial-gradient(circle at 18% 0%, rgba(31, 67, 142, 0.06), transparent 30%),
+      #02050b;
+    border-top: 1px solid rgba(255, 255, 255, 0.055);
+  }
+
+  .yb-shot-footer-inner {
+    width: min(1120px, calc(100% - 44px));
+    margin: 0 auto;
+  }
+
+  .yb-shot-footer-brand {
+    margin: 0 0 22px;
+    color: rgba(255, 255, 255, 0.94);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.55;
     letter-spacing: -0.04em;
   }
 
-  .yb-shot-live ul {
-    list-style: none;
+  .yb-shot-footer-brand span {
+    color: rgba(255, 255, 255, 0.48);
+    font-weight: 300;
+  }
+
+  .yb-shot-footer-info {
+    display: grid;
+    gap: 13px;
     margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 9px;
   }
 
-  .yb-shot-live li {
+  .yb-shot-footer-info p,
+  .yb-shot-footer-copy {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 13px;
+    font-weight: 300;
+    line-height: 1.55;
+    letter-spacing: -0.035em;
+    word-break: keep-all;
+  }
+
+  .yb-shot-footer-info p strong {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 400;
+  }
+
+  .yb-shot-footer-copy {
+    margin-top: 30px;
+    color: rgba(255, 255, 255, 0.46);
+  }
+
+
+  .yb-shot-reveal {
+    opacity: 1;
+    transition:
+      transform 0.82s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.82s ease;
+    will-change: transform, filter;
+    filter: saturate(0.88);
+  }
+
+  .yb-shot-reveal.yb-slide-left {
+    transform: translateX(-44px) scale(0.985);
+  }
+
+  .yb-shot-reveal.yb-slide-right {
+    transform: translateX(44px) scale(0.985);
+  }
+
+  .yb-shot-reveal.is-visible {
+    transform: translateX(0) scale(1);
+    filter: saturate(1);
+  }
+
+  .yb-shot-fixed-actions {
+    position: fixed;
+    left: 50%;
+    bottom: max(14px, env(safe-area-inset-bottom));
+    z-index: 80;
+    width: min(620px, calc(100% - 24px));
+    padding: 10px;
     display: grid;
-    grid-template-columns: 54px 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 10px;
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    background: rgba(3, 7, 15, 0.86);
+    box-shadow:
+      0 18px 50px rgba(0, 0, 0, 0.42),
+      inset 0 1px 0 rgba(255, 255, 255, 0.045);
+    backdrop-filter: blur(18px);
+    transform: translateX(-50%);
+  }
+
+  .yb-shot-fixed-action {
+    position: relative;
+    overflow: hidden;
+    min-height: 54px;
+    display: inline-flex;
     align-items: center;
-    padding: 10px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.68);
-    font-size: 13px;
+    justify-content: center;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(255, 255, 255, 0.94);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    text-decoration: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
   }
 
-  .yb-shot-live li:first-child {
-    border-top: 0;
+  .yb-shot-fixed-action.primary {
+    border-color: rgba(54, 111, 255, 0.58);
+    background: linear-gradient(135deg, #2f6cff 0%, #2459d8 100%);
+    box-shadow: 0 14px 30px rgba(47, 108, 255, 0.24);
   }
 
-  .yb-shot-live b {
-    color: var(--yb-shot-gold);
-    font-size: 13px;
+  .yb-shot-fixed-action:hover {
+    border-color: rgba(255, 255, 255, 0.24);
+    background: rgba(255, 255, 255, 0.075);
+  }
+
+  .yb-shot-fixed-action.primary:hover {
+    background: linear-gradient(135deg, #3774ff 0%, #285fe5 100%);
+  }
+
+
+  @keyframes ybHeroRise {
+    0% {
+      transform: translateY(12px);
+      filter: blur(4px);
+    }
+
+    100% {
+      transform: translateY(-2vh);
+      filter: blur(0);
+    }
+  }
+
+  @keyframes ybLogoFloat {
+    0%, 100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-7px);
+    }
+  }
+
+  @keyframes ybSoftPulse {
+    0%, 100% {
+      transform: scale(0.98);
+      opacity: 0.44;
+    }
+
+    50% {
+      transform: scale(1.06);
+      opacity: 0.88;
+    }
+  }
+
+  @keyframes ybPanelDriftA {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(10px, -12px, 0); }
+  }
+
+  @keyframes ybPanelDriftB {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(-12px, 10px, 0); }
+  }
+
+  @keyframes ybPanelDriftC {
+    0%, 100% { transform: translate3d(0, 0, 0); }
+    50% { transform: translate3d(0, -10px, 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .yb-shot-reveal,
+    .yb-shot-reveal.yb-slide-left,
+    .yb-shot-reveal.yb-slide-right,
+    .yb-shot-logo-wrap,
+    .yb-shot-logo-wrap::before,
+    .yb-shot-panel-a,
+    .yb-shot-panel-b,
+    .yb-shot-panel-c,
+    .yb-shot-hero-content {
+      transform: none !important;
+      transition: none !important;
+      animation: none !important;
+      filter: none !important;
+    }
   }
 
   @media (max-width: 900px) {
@@ -550,81 +1310,195 @@ const webPageSchema = {
   }
 
   @media (max-width: 640px) {
-    .yb-shot-inner {
-      width: min(100% - 32px, 1120px);
+    .yb-shot-back {
+      top: 14px;
+      left: 14px;
+      height: 38px;
+      padding: 0 13px;
+      font-size: 12px;
     }
 
-    .yb-shot-menu {
-      top: 28px;
-      left: 28px;
+    .yb-shot-inner {
+      width: min(calc(100% - 32px), 1120px);
     }
 
     .yb-shot-hero-content {
       width: min(430px, calc(100% - 42px));
-      transform: translateY(-2vh);
+      transform: translateY(-3vh);
+    }
+
+    .yb-shot-logo-wrap {
+      width: 142px;
+      height: 142px;
+      margin-bottom: 26px;
+    }
+
+    .yb-shot-logo {
+      width: 130px;
+      height: 130px;
+      max-width: 130px;
+      max-height: 130px;
+      transform: scale(1.62);
+    }
+
+    .yb-shot-kicker {
+      margin-bottom: 16px;
+      font-size: 13px;
+      letter-spacing: 0.2em;
     }
 
     .yb-shot-hero h1 {
-      font-size: 39px;
+      font-size: clamp(28px, 7.8vw, 40px);
+      line-height: 1.18;
+      letter-spacing: -0.06em;
     }
 
     .yb-shot-hero-copy {
-      font-size: 14px;
-      line-height: 1.58;
+      margin-top: 22px;
+      font-size: 15px;
+      line-height: 1.68;
     }
 
     .yb-shot-hero-actions {
       grid-template-columns: 1fr;
-      width: min(390px, 100%);
+      width: min(360px, 100%);
+      margin-top: 30px;
+    }
+
+    .yb-shot-action {
+      min-height: 50px;
+      font-size: 14px;
     }
 
     .yb-shot-section {
-      padding: 70px 0;
+      padding: 74px 0;
+    }
+
+    .yb-shot-head {
+      margin-bottom: 28px;
+    }
+
+    .yb-shot-head h2,
+    .yb-shot-copy h2 {
+      font-size: clamp(28px, 8.2vw, 38px);
+      line-height: 1.3;
+    }
+
+    .yb-shot-head span,
+    .yb-shot-copy span {
+      margin-top: 16px;
+      font-size: 14px;
+      line-height: 1.72;
     }
 
     .yb-shot-card,
-    .yb-shot-mini,
-    .yb-shot-faq {
+    .yb-shot-mini {
       min-height: auto;
+      padding: 24px 22px;
+      border-radius: 18px;
+    }
+
+    .yb-shot-card strong,
+    .yb-shot-mini strong {
+      font-size: 20px;
     }
 
     .yb-shot-consult {
       padding: 18px;
+      border-radius: 18px;
     }
+
+    .yb-shot-consult-after {
+      margin-top: 12px;
+      padding: 13px 12px;
+      font-size: 12px;
+    }
+
+    .yb-shot-live {
+      padding: 17px;
+      border-radius: 20px;
+    }
+
+    .yb-shot-live-head {
+      margin-bottom: 12px;
+      padding-bottom: 13px;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .yb-shot-live-title h3 {
+      font-size: 19px;
+    }
+
+    .yb-shot-live-viewport {
+      height: 392px;
+    }
+
+    :global(.yb-shot-live-list) {
+      gap: 10px !important;
+      animation-duration: 64s !important;
+    }
+
+    :global(.yb-shot-live-item) {
+      min-height: 66px !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      gap: 10px !important;
+      padding: 0 13px !important;
+      border-radius: 16px !important;
+    }
+
+
+    :global(.yb-shot-live-title-text) {
+      font-size: 14px !important;
+      line-height: 1.35 !important;
+    }
+
+    :global(.yb-shot-live-time) {
+    color: rgba(255, 255, 255, 0.44) !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.035em !important;
+    white-space: nowrap !important;
   }
+
 </style>
 
 <div
   class={`yb-shot-page yb-shot-page-${theme}`}
-  style={`--yb-accent:${accent};--yb-gold:${gold};--yb-danger:${danger};`}
 >
+  <a class="yb-shot-back" href="/" aria-label="발사대로 돌아가기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+    <span>돌아가기</span>
+  </a>
+
   <section class="yb-shot-hero" id="hero">
     <div class="yb-shot-panel-a"></div>
     <div class="yb-shot-panel-b"></div>
     <div class="yb-shot-panel-c"></div>
 
-    <button class="yb-shot-menu" aria-label="메뉴 열기">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-
     <div class="yb-shot-hero-content">
-      <p class="yb-shot-kicker">{name} 피해 정황 확인</p>
+      <div class="yb-shot-logo-wrap">
+        <img class="yb-shot-logo" src={logo} alt="법무법인 윤빛 로고" />
+      </div>
+
+      <p class="yb-shot-kicker">{name} 사칭 사기 주의</p>
 
       <h1>
-        입금하신 금액을<br />
-        포기하기 전
+        <span class="yb-shot-title-line">지금은 법률 전문가의</span>
+        <span class="yb-shot-title-line">개입이 필요합니다</span>
       </h1>
 
       <p class="yb-shot-hero-copy">
-        윤빛이 자금세탁 이동 경로와<br />
-        원금 회수 가능성부터 확인하겠습니다.
+        입금을 하신 상황이시라면<br />
+        현재 상황을 점검하셔야 합니다.
       </p>
 
       <div class="yb-shot-hero-actions">
-        <a class="yb-shot-action primary" href="#consult">원금 회수 가능성 상담하기</a>
-        <a class="yb-shot-action" href={kakao} target="_blank" rel="noopener noreferrer">피해자료 보내기</a>
+        <a class="yb-shot-action primary" href="#consult">골든타임을 놓치지 마세요</a>
+        <a class="yb-shot-action" href={telHref}>{phone}</a>
       </div>
     </div>
   </section>
@@ -635,38 +1509,28 @@ const webPageSchema = {
         <p>IF YOU PAID</p>
 
         <h2>
-          {name} 관련<br />
-          입금을 하셨다면
+          {name} 사칭 사기<br />
+          관련하여
         </h2>
 
         <span>
-          처음부터 사기라고 생각하지 않았을 수 있습니다.
-          처음에는 수익이 보였고, 담당자도 정상적으로 응대했을 수 있습니다.
-          하지만 출금이 지연되고 추가 입금을 요구받고 있다면,
-          지금은 기다림보다 원금 회수 가능성 확인이 먼저입니다.
+          처음에는 수익 화면이 정상적으로 표시되고 담당자 역시 문제없이 응대했을 수 있습니다.
+          그러나 출금 지연, 세금·보증금·인증비 명목의 추가 입금 요구가 시작됐다면 단순 지연이 아니라
+          자금 이동과 증거 소실이 이미 진행 중일 가능성까지 함께 봐야 합니다.
+          이 단계에서는 기다리는 것보다 빠른 법적 검토와 대응 착수가 원금 회수 가능성을 높이는 핵심입니다.
         </span>
 
-        <a class="yb-shot-link" href="#consult">현재 상황 상담하기 →</a>
+        <a class="yb-shot-link" href={telHref}>{phone} 실시간 상담하기 →</a>
       </div>
 
       <div class="yb-shot-mini-grid">
-        <article class="yb-shot-mini">
-          <i>01</i>
-          <strong>출금 지연</strong>
-          <p>출금 신청 후 처리 중이라는 말만 반복된다면 현재 정황을 먼저 확인해야 합니다.</p>
-        </article>
-
-        <article class="yb-shot-mini">
-          <i>02</i>
-          <strong>추가 입금 요구</strong>
-          <p>세금, 인증비, 수수료, 보증금 명목의 추가 입금은 위험 신호일 수 있습니다.</p>
-        </article>
-
-        <article class="yb-shot-mini">
-          <i>03</i>
-          <strong>연락두절</strong>
-          <p>담당자 답변이 늦어지거나 사이트 접속이 막히면 자료 보존이 우선입니다.</p>
-        </article>
+        {warningCards.map(([num, title, desc]) => (
+          <article class="yb-shot-mini">
+            <i>{num}</i>
+            <strong>{title}</strong>
+            <p>{desc}</p>
+          </article>
+        ))}
       </div>
     </div>
   </section>
@@ -677,13 +1541,15 @@ const webPageSchema = {
         <p>RECOVERY CHECK</p>
 
         <h2>
-          원금 회수 가능성을 높이기 위해<br />
-          윤빛은 3가지를 확인합니다.
+          윤빛은 3가지를<br />
+          먼저 봅니다
         </h2>
 
         <span>
-          사기 조직은 피해금을 대포통장, 가상계좌, 지갑주소로 빠르게 분산시킵니다.
-          윤빛은 자금세탁 이동 경로를 정리하고 필요한 법적 조치로 원금 회수 가능성을 높입니다.
+          사기 조직은 대포통장과 차명 계좌를 이용해 피해금을 짧은 시간 안에 분산시키고,
+          이후 자금세탁성 이동으로 추적을 어렵게 만드는 경우가 많습니다.
+          윤빛은 입금 흐름, 상대방 특정 단서, 남아 있는 증거를 먼저 정리한 뒤
+          지급정지·고소·가압류·손해배상 등 필요한 법적 조치를 함께 검토합니다.
         </span>
       </div>
 
@@ -705,13 +1571,14 @@ const webPageSchema = {
         <p>PROOF OF RESPONSE</p>
 
         <h2>
-          실제 자료로 확인되는<br />
-          윤빛의 대응 경험
+          정확한 대응이<br />
+          결과를 좌우합니다
         </h2>
 
         <span>
-          윤빛은 입금내역, 대화자료, 사이트 화면, 계좌정보를 기준으로
-          합의 가능성, 민·형사 절차, 공동대응 여부를 함께 검토합니다.
+          같은 사칭 피해처럼 보여도 출금거부, 추가입금 요구, 연락두절, 대포통장 이용 여부에 따라
+          선택해야 할 절차와 우선순위는 달라집니다. 윤빛은 입금내역, 대화자료, 사이트 화면, 계좌정보를 기준으로
+          사건 유형에 맞는 민·형사 절차와 공동대응 가능성을 함께 검토합니다.
         </span>
       </div>
 
@@ -726,8 +1593,10 @@ const webPageSchema = {
       </div>
 
       <div class="yb-shot-proof-note">
-        ※ 의뢰인 정보, 사건번호, 계좌번호, 서명·도장 등 특정 가능한 정보는 비식별 처리합니다.
-        사건 결과는 사안별 증거 상태와 상대방 특정 여부에 따라 달라질 수 있습니다.
+        ※ 윤빛은 절차 노출을 고려해 유선상으로 구체적인 대응 방식 전체를 안내하지 않습니다.
+        사기 업체 측에서 피해자인 척 상담을 요청해 절차를 사전에 파악한 뒤,
+        자금 이동·증거 삭제·허위 합의 제안 등으로 방어한 사례가 있었기 때문입니다.
+        구체적인 대응 방향은 자료 확인 후 사건별 증거 상태와 상대방 특정 가능성을 기준으로 안내합니다.
       </div>
     </div>
   </section>
@@ -738,32 +1607,34 @@ const webPageSchema = {
         <p>CONSULTATION</p>
 
         <h2>
-          {name} 피해,<br />
-          원금 회수 가능성부터 확인하세요.
+          {name} 사칭 피해,<br />
+          지금 확인이 필요합니다
         </h2>
 
         <span>
-          입금내역, 대화자료, 사이트 캡처가 남아 있다면
-          현재 자료만으로도 대응 방향을 먼저 확인할 수 있습니다.
-          기다리는 동안 대화방, 사이트, 계좌 단서가 사라질 수 있습니다.
+          입금내역, 대화자료, 사이트 캡처가 남아 있다면 지금 바로 현재 상황을 점검해야 합니다.
+          시간이 지날수록 대화방과 사이트는 사라지고, 계좌 단서는 폐쇄되며, 피해금은 여러 계좌로 분산될 수 있습니다.
+          골든타임을 놓치지 않고 자료를 보존한 상태에서 법적 대응 가능성을 검토하는 것이 중요합니다.
         </span>
       </div>
 
       <div class="yb-shot-consult-stack">
         <div class="yb-shot-consult">
-          <ConsultForm site={site} caseName={`${name} 원금 회수 가능성 상담`} />
+          <ConsultForm site={site} caseName={`${name} 피해 정황 상담`} />
+          <p class="yb-shot-consult-after">접수 후 담당자가 자료와 피해 정황을 순차적으로 확인하며, 긴급 건은 보통 10분 내외로 우선 연락드립니다.</p>
         </div>
 
         <div class="yb-shot-live">
-          <h3>실시간 상담 신청 현황</h3>
-          <ul>
-            {liveCases.map(([area, desc]) => (
-              <li>
-                <b>{area}</b>
-                <span>{desc}</span>
-              </li>
-            ))}
-          </ul>
+          <div class="yb-shot-live-head">
+            <div class="yb-shot-live-title">
+              <small>REAL-TIME INQUIRY</small>
+              <h3>실시간 문의 현황</h3>
+            </div>
+          </div>
+
+          <div class="yb-shot-live-viewport">
+            <ul class="yb-shot-live-list" id="ybShotLiveList"></ul>
+          </div>
         </div>
       </div>
     </div>
@@ -782,16 +1653,294 @@ const webPageSchema = {
 
       <div class="yb-shot-faq-grid">
         {faqs.map(([question, answer], index) => (
-          <article class="yb-shot-faq">
-            <i>{String(index + 1).padStart(2, '0')}</i>
-            <strong>{question}</strong>
+          <details class="yb-shot-faq">
+            <summary>
+              <i>{String(index + 1).padStart(2, '0')}</i>
+              <strong>{question}</strong>
+              <em>+</em>
+            </summary>
             <p>{answer}</p>
-          </article>
+          </details>
         ))}
       </div>
     </div>
   </section>
+
+  <section class="yb-shot-notice-section" aria-label="사칭 피해 예방 및 상담 절차 고지">
+    <div class="yb-shot-inner">
+      <div class="yb-shot-notice">
+        <h3 class="yb-shot-notice-title">사칭 피해 예방 및 상담 절차 고지</h3>
+
+        <p>
+          본 페이지는 특정 정상기업의 명예를 훼손하거나 영업행위를 문제 삼기 위한 목적이 아니며,
+          정상기업의 명칭·로고·사이트 등을 무단 도용한 사칭 사기 피해 예방 및 법적 대응 안내를 위해 작성되었습니다.
+        </p>
+
+        <p>
+          최근 정상 업체와 법무법인·변호사를 사칭한 2차 피해 사례가 증가하고 있습니다. 법무법인 윤빛은
+          유선상으로 비용을 선요구하지 않으며, 전화 상담만으로 사건별 구체 절차와 대응 방식을 전부 공개하지 않습니다.
+        </p>
+
+        <p>
+          이는 사기 업체 측에서 피해자인 척 접근해 상담을 요청한 뒤 대응 절차를 사전에 파악하고,
+          자금 이동·증거 삭제·허위 합의 안내 등으로 선제 방어한 사례가 있었기 때문입니다.
+        </p>
+
+        <p>
+          윤빛은 유선 상담에서 피해 정황과 긴급성을 우선 확인한 뒤, 필요하다고 판단되는 경우
+          내방 상담을 통해 증거자료 기준의 구체적인 절차와 사건별 대응 방향을 안내합니다.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="yb-shot-footer">
+    <div class="yb-shot-footer-inner">
+      <p class="yb-shot-footer-brand">법무법인 윤빛 <span>| 금융사기 피해회복센터</span></p>
+
+      <div class="yb-shot-footer-info">
+        <p><strong>광고책임변호사</strong> : 윤수빈 변호사</p>
+        <p><strong>사업자등록번호</strong> : 754-87-03255</p>
+        <p><strong>주소</strong> : 서울특별시 강남구 영동대로 621, 621빌딩 13층</p>
+      </div>
+
+      <p class="yb-shot-footer-copy">© 2026 법무법인 윤빛. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <div class="yb-shot-fixed-actions" aria-label="상담 바로가기">
+    <a class="yb-shot-fixed-action primary" href={telHref}>전화 상담</a>
+    <a class="yb-shot-fixed-action" href={kakao} target="_blank" rel="noopener noreferrer">카카오 상담</a>
+    <a class="yb-shot-fixed-action" href="#consult">상담 신청</a>
+  </div>
 </div>
+
+<script is:inline>
+  const LIVE_NAMES = [
+    '김○○', '이○○', '박○○', '최○○', '정○○', '강○○', '조○○', '윤○○', '장○○', '임○○',
+    '한○○', '오○○', '서○○', '신○○', '권○○', '황○○', '안○○', '송○○', '류○○', '홍○○',
+    '문○○', '양○○', '고○○', '백○○', '남○○', '유○○', '전○○', '하○○', '구○○', '민○○'
+  ];
+
+  const LIVE_TIMES = [
+    '12분 전', '19분 전', '27분 전', '34분 전', '42분 전', '51분 전', '1시간 전', '1시간 전', '2시간 전', '2시간 전',
+    '3시간 전', '3시간 전', '4시간 전', '5시간 전', '5시간 전', '6시간 전', '7시간 전', '8시간 전', '9시간 전', '10시간 전',
+    '11시간 전', '12시간 전', '13시간 전', '14시간 전', '15시간 전', '16시간 전', '18시간 전', '20시간 전', '22시간 전', '1일 전'
+  ];
+
+  const hashString = (value) => {
+    let hash = 2166136261;
+
+    for (let i = 0; i < value.length; i += 1) {
+      hash ^= value.charCodeAt(i);
+      hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+    }
+
+    return Math.abs(hash >>> 0);
+  };
+
+  const seededRandom = (seed) => {
+    let value = seed || 123456789;
+
+    return () => {
+      value = (value * 1664525 + 1013904223) >>> 0;
+      return value / 4294967296;
+    };
+  };
+
+  const getVisitorSeed = () => {
+    const key = 'yb_recover_visitor_seed';
+
+    try {
+      let stored = localStorage.getItem(key);
+
+      if (!stored) {
+        stored = `${Date.now()}_${Math.random()}_${navigator.userAgent}`;
+        localStorage.setItem(key, stored);
+      }
+
+      return hashString(stored);
+    } catch (_) {
+      return hashString(navigator.userAgent || 'yb-recover');
+    }
+  };
+
+  const shuffle = (list, random) => {
+    const copied = [...list];
+
+    for (let i = copied.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(random() * (i + 1));
+      [copied[i], copied[j]] = [copied[j], copied[i]];
+    }
+
+    return copied;
+  };
+
+  const renderLiveItems = () => {
+    const target = document.getElementById('ybShotLiveList');
+    if (!target) return;
+
+    const random = seededRandom(getVisitorSeed());
+    const names = shuffle(LIVE_NAMES, random);
+
+    const items = Array.from({ length: 30 }).map((_, index) => ({
+      text: `${names[index]}님의 상담신청이 접수되었습니다`,
+      time: LIVE_TIMES[index]
+    }));
+
+    const html = items
+      .map((item) => `
+        <li class="yb-shot-live-item">
+          <strong class="yb-shot-live-title-text">${item.text}</strong>
+          <span class="yb-shot-live-time">${item.time}</span>
+        </li>
+      `)
+      .join('');
+
+    target.innerHTML = html + html;
+  };
+
+
+
+
+
+  const removeConsultFormInternalNotice = () => {
+    const targetPhrase = '접수 후 담당자가 순차적으로 확인합니다';
+
+    document.querySelectorAll('.yb-shot-consult p, .yb-shot-consult small, .yb-shot-consult span, .yb-shot-consult div').forEach((element) => {
+      if (element.closest('.yb-shot-consult-after')) return;
+
+      const text = (element.textContent || '').replace(/\s+/g, ' ').trim();
+      if (!text.includes(targetPhrase)) return;
+
+      const hasField = element.querySelector('input, textarea, select, button, form');
+      if (hasField) return;
+
+      element.remove();
+    });
+  };
+
+  const cleanupLegacyFloatingBars = () => {
+    const hideLegacy = (element) => {
+      if (!element || element.closest('.yb-shot-fixed-actions')) return;
+      if (element === document.body || element === document.documentElement) return;
+
+      element.setAttribute('aria-hidden', 'true');
+      element.style.setProperty('display', 'none', 'important');
+      element.style.setProperty('visibility', 'hidden', 'important');
+      element.style.setProperty('opacity', '0', 'important');
+      element.style.setProperty('height', '0', 'important');
+      element.style.setProperty('min-height', '0', 'important');
+      element.style.setProperty('max-height', '0', 'important');
+      element.style.setProperty('overflow', 'hidden', 'important');
+      element.style.setProperty('pointer-events', 'none', 'important');
+    };
+
+    const isBottomFloating = (element) => {
+      if (!element || element.closest('.yb-shot-fixed-actions')) return false;
+
+      const style = window.getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      const isFixedLike = style.position === 'fixed' || style.position === 'sticky';
+      const isBottomArea = rect.bottom >= window.innerHeight - 140 && rect.top >= window.innerHeight * 0.42;
+      const isBarSize = rect.width >= Math.min(260, window.innerWidth * 0.55) && rect.height <= 180;
+
+      return isFixedLike && isBottomArea && isBarSize;
+    };
+
+    document.querySelectorAll('div, nav, section, aside').forEach((element) => {
+      if (!isBottomFloating(element)) return;
+
+      const text = (element.textContent || '').replace(/\s+/g, '');
+      const hasOldTwoButtonText = text.includes('전화상담') && text.includes('카카오상담') && !text.includes('상담신청');
+      const hasOldActionLinks = element.querySelector('a[href^="tel:"], a[href*="open.kakao.com"]') && text.includes('카카오');
+
+      if (hasOldTwoButtonText || hasOldActionLinks) {
+        hideLegacy(element);
+      }
+    });
+
+    document.querySelectorAll('a, button').forEach((trigger) => {
+      if (trigger.closest('.yb-shot-fixed-actions')) return;
+
+      const text = (trigger.textContent || '').replace(/\s+/g, '');
+      const href = trigger.getAttribute('href') || '';
+      const looksLikeOldButton = text === '전화상담' || text === '카카오상담' || href.startsWith('tel:') || href.includes('open.kakao.com');
+      if (!looksLikeOldButton) return;
+
+      let current = trigger.parentElement;
+      let depth = 0;
+
+      while (current && current !== document.body && depth < 7) {
+        if (current.closest('.yb-shot-fixed-actions')) return;
+
+        const currentText = (current.textContent || '').replace(/\s+/g, '');
+        if (isBottomFloating(current) && currentText.includes('전화상담') && currentText.includes('카카오상담') && !currentText.includes('상담신청')) {
+          hideLegacy(current);
+          return;
+        }
+
+        current = current.parentElement;
+        depth += 1;
+      }
+    });
+  };
+
+  const initReveal = () => {
+    const targets = document.querySelectorAll(
+      '.yb-shot-section, .yb-shot-card, .yb-shot-mini, .yb-shot-consult, .yb-shot-live, .yb-shot-faq, .yb-shot-notice, .yb-shot-footer'
+    );
+
+    targets.forEach((target, index) => {
+      target.classList.add('yb-shot-reveal', index % 2 === 0 ? 'yb-slide-left' : 'yb-slide-right');
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -70px 0px' }
+    );
+
+    targets.forEach((target) => observer.observe(target));
+  };
+
+  cleanupLegacyFloatingBars();
+  removeConsultFormInternalNotice();
+  renderLiveItems();
+  initReveal();
+
+  window.addEventListener('load', () => {
+    cleanupLegacyFloatingBars();
+    removeConsultFormInternalNotice();
+  });
+  window.addEventListener('resize', cleanupLegacyFloatingBars);
+  setTimeout(() => {
+    cleanupLegacyFloatingBars();
+    removeConsultFormInternalNotice();
+  }, 250);
+  setTimeout(() => {
+    cleanupLegacyFloatingBars();
+    removeConsultFormInternalNotice();
+  }, 900);
+  setTimeout(() => {
+    cleanupLegacyFloatingBars();
+    removeConsultFormInternalNotice();
+  }, 1800);
+
+  const consultNoticeObserverTarget = document.querySelector('.yb-shot-consult');
+  if (consultNoticeObserverTarget) {
+    const consultNoticeObserver = new MutationObserver(() => removeConsultFormInternalNotice());
+    consultNoticeObserver.observe(consultNoticeObserverTarget, { childList: true, subtree: true });
+  }
+
+
+</script>
 
 <script type="application/ld+json" set:html={JSON.stringify(webPageSchema)} />
 <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />

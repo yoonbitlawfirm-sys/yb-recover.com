@@ -1,5 +1,10 @@
 ---
-const { site } = Astro.props;
+const { site = {} } = Astro.props;
+
+const theme = site?.theme || 'main';
+const accent = site?.colors?.accent || '#a61c27';
+const gold = site?.colors?.gold || '#c9a45c';
+const danger = site?.colors?.danger || '#7f1d1d';
 ---
 
 <style is:global>
@@ -46,7 +51,26 @@ const { site } = Astro.props;
   .sticky-bottom,
   .floating-call,
   .call-floating,
-  .fixed-consult-bar {
+  .fixed-consult-bar,
+  .floating-actions,
+  .fixed-actions,
+  .fixed-contact,
+  .floating-contact,
+  .bottom-buttons,
+  .bottom-button-wrap,
+  .bottom-action-bar,
+  .bottom-fixed-cta,
+  .mobile-bottom-fixed,
+  .mobile-bottom-cta,
+  .mobile-fixed-bottom,
+  .quick-buttons,
+  .quick-action-buttons,
+  .call-kakao-floating,
+  .call-kakao-bar,
+  .contact-actions,
+  .contact-action-bar,
+  .tel-kakao-bar,
+  .phone-kakao-bar {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
@@ -57,12 +81,21 @@ const { site } = Astro.props;
     pointer-events: none !important;
   }
 
-  body > div[style*="position: fixed"],
-  body > section[style*="position: fixed"],
-  body > aside[style*="position: fixed"] {
+  footer:not(.yb-launch-footer),
+  .site-footer,
+  .global-footer,
+  .main-footer,
+  .footer,
+  .footer-wrap,
+  .copyright,
+  .page-footer {
     display: none !important;
     visibility: hidden !important;
     opacity: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: 0 !important;
+    overflow: hidden !important;
     pointer-events: none !important;
   }
 
@@ -80,113 +113,11 @@ const { site } = Astro.props;
       "Noto Sans KR",
       sans-serif;
   }
-
-  .launch-base {
-    min-height: 100svh !important;
-    height: 100svh !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  .yb-footer,
-  footer {
-    background: #02050b !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-  }
-
-  .yb-footer-overridden {
-    margin: 0 !important;
-    padding: 42px 22px 48px !important;
-    background: #02050b !important;
-    color: rgba(255, 255, 255, 0.58) !important;
-    font-family:
-      Pretendard,
-      -apple-system,
-      BlinkMacSystemFont,
-      "Segoe UI",
-      "Noto Sans KR",
-      sans-serif !important;
-  }
-
-  .yb-footer-overridden .yb-footer-inner {
-    width: min(100%, 920px) !important;
-    margin: 0 auto !important;
-  }
-
-  .yb-footer-overridden p {
-    margin: 0 !important;
-    padding: 0 !important;
-    word-break: keep-all !important;
-  }
-
-  .yb-footer-overridden .yb-footer-title {
-    margin-bottom: 18px !important;
-    font-size: 16px !important;
-    line-height: 1.5 !important;
-    letter-spacing: -0.04em !important;
-  }
-
-  .yb-footer-overridden .yb-footer-title strong {
-    color: #ffffff !important;
-    font-weight: 700 !important;
-  }
-
-  .yb-footer-overridden .yb-footer-title span {
-    color: rgba(255, 255, 255, 0.66) !important;
-    font-weight: 300 !important;
-  }
-
-  .yb-footer-overridden .yb-footer-info {
-    display: grid !important;
-    gap: 5px !important;
-    margin-bottom: 22px !important;
-  }
-
-  .yb-footer-overridden .yb-footer-info p {
-    font-size: 14px !important;
-    line-height: 1.65 !important;
-    letter-spacing: -0.035em !important;
-    color: rgba(255, 255, 255, 0.62) !important;
-    font-weight: 300 !important;
-  }
-
-  .yb-footer-overridden .yb-footer-copy {
-    font-size: 13px !important;
-    line-height: 1.6 !important;
-    letter-spacing: -0.035em !important;
-    color: rgba(255, 255, 255, 0.42) !important;
-    font-weight: 300 !important;
-  }
-
-  @media (max-width: 640px) {
-    .yb-footer-overridden {
-      padding: 36px 18px 42px !important;
-    }
-
-    .yb-footer-overridden .yb-footer-title {
-      margin-bottom: 16px !important;
-      font-size: 15px !important;
-    }
-
-    .yb-footer-overridden .yb-footer-info {
-      gap: 4px !important;
-      margin-bottom: 20px !important;
-    }
-
-    .yb-footer-overridden .yb-footer-info p {
-      font-size: 13px !important;
-      line-height: 1.7 !important;
-    }
-
-    .yb-footer-overridden .yb-footer-copy {
-      font-size: 12px !important;
-    }
-  }
 </style>
 
 <section
-  class={`launch-base launch-base-${site.theme}`}
-  style={`--yb-accent:${site.colors.accent};--yb-gold:${site.colors.gold};--yb-danger:${site.colors.danger};`}
+  class={`launch-base launch-base-${theme}`}
+  style={`--yb-accent:${accent};--yb-gold:${gold};--yb-danger:${danger};`}
 >
   <div class="launch-bg" aria-hidden="true">
     <div class="launch-scene scene-a"></div>
@@ -239,9 +170,32 @@ const { site } = Astro.props;
   </div>
 </section>
 
+<footer class="yb-launch-footer">
+  <div class="yb-launch-footer-inner">
+    <p class="yb-launch-footer-title">
+      <strong>법무법인 윤빛</strong>
+      <span>ㅣ금융사기 피해회복센터</span>
+    </p>
+
+    <div class="yb-launch-footer-info">
+      <p>광고책임변호사 : 윤수빈 변호사</p>
+      <p>사업자등록번호 : 754-87-03255</p>
+      <p>주소 : 서울특별시 강남구 영동대로 621, 621빌딩 11층</p>
+    </div>
+
+    <p class="yb-launch-footer-copy">
+      © 2026 법무법인 윤빛. All rights reserved.
+    </p>
+  </div>
+</footer>
+
 <style>
   .launch-base {
     position: relative;
+    min-height: 100svh;
+    height: 100svh;
+    margin: 0;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -368,6 +322,71 @@ const { site } = Astro.props;
     font-weight: 300;
   }
 
+  .yb-launch-footer {
+    margin: 0;
+    padding: 42px 22px 48px;
+    background: #02050b;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.58);
+    font-family:
+      Pretendard,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Noto Sans KR",
+      sans-serif;
+  }
+
+  .yb-launch-footer-inner {
+    width: min(100%, 920px);
+    margin: 0 auto;
+  }
+
+  .yb-launch-footer p {
+    margin: 0;
+    padding: 0;
+    word-break: keep-all;
+  }
+
+  .yb-launch-footer-title {
+    margin-bottom: 18px !important;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: -0.04em;
+  }
+
+  .yb-launch-footer-title strong {
+    color: #ffffff;
+    font-weight: 700;
+  }
+
+  .yb-launch-footer-title span {
+    color: rgba(255, 255, 255, 0.66);
+    font-weight: 300;
+  }
+
+  .yb-launch-footer-info {
+    display: grid;
+    gap: 5px;
+    margin-bottom: 22px;
+  }
+
+  .yb-launch-footer-info p {
+    font-size: 14px;
+    line-height: 1.65;
+    letter-spacing: -0.035em;
+    color: rgba(255, 255, 255, 0.62);
+    font-weight: 300;
+  }
+
+  .yb-launch-footer-copy {
+    font-size: 13px;
+    line-height: 1.6;
+    letter-spacing: -0.035em;
+    color: rgba(255, 255, 255, 0.42);
+    font-weight: 300;
+  }
+
   @media (max-width: 640px) {
     .launch-brand {
       width: min(88vw, 420px);
@@ -420,8 +439,27 @@ const { site } = Astro.props;
       line-height: 1.6;
     }
 
-    .pc-only {
-      display: none;
+    .yb-launch-footer {
+      padding: 36px 18px 42px;
+    }
+
+    .yb-launch-footer-title {
+      margin-bottom: 16px !important;
+      font-size: 15px;
+    }
+
+    .yb-launch-footer-info {
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+
+    .yb-launch-footer-info p {
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .yb-launch-footer-copy {
+      font-size: 12px;
     }
   }
 
@@ -440,94 +478,9 @@ const { site } = Astro.props;
     form.addEventListener('submit', (event) => {
       event.preventDefault();
 
-      const value = (input.value || '')
-        .replace(/\s+/g, '')
-        .trim();
-
-      const keyword = value || '출금거부';
+      const keyword = (input.value || '').replace(/\s+/g, '').trim() || '출금거부';
 
       location.href = `/scam/${encodeURIComponent(keyword)}`;
     });
   }
-
-  const replaceFooter = () => {
-    const footers = Array.from(document.querySelectorAll('footer, .yb-footer'));
-
-    footers.forEach((footer) => {
-      footer.className = 'yb-footer yb-footer-overridden';
-      footer.innerHTML = `
-        <div class="yb-footer-inner">
-          <p class="yb-footer-title">
-            <strong>법무법인 윤빛</strong>
-            <span>ㅣ금융사기 피해회복센터</span>
-          </p>
-
-          <div class="yb-footer-info">
-            <p>광고책임변호사 : 윤수빈 변호사</p>
-            <p>사업자등록번호 : 754-87-03255</p>
-            <p>주소 : 서울특별시 강남구 영동대로 621, 621빌딩 11층</p>
-          </div>
-
-          <p class="yb-footer-copy">
-            © 2026 법무법인 윤빛. All rights reserved.
-          </p>
-        </div>
-      `;
-    });
-  };
-
-  const removeFloatingUI = () => {
-    const elements = Array.from(document.querySelectorAll('body *'));
-
-    elements.forEach((el) => {
-      const text = (el.innerText || '').trim();
-      const style = window.getComputedStyle(el);
-      const rect = el.getBoundingClientRect();
-
-      const isFixed =
-        style.position === 'fixed' ||
-        style.position === 'sticky';
-
-      const isTopOrBottom =
-        rect.top <= 90 ||
-        window.innerHeight - rect.bottom <= 90;
-
-      const hasFloatingText =
-        text.includes('상담 예약') ||
-        text.includes('전화 상담') ||
-        text.includes('카카오 상담') ||
-        text.includes('법무법인 윤빛');
-
-      const isFloatingSize =
-        rect.width >= window.innerWidth * 0.45 &&
-        rect.height <= 90;
-
-      if (isFixed && isTopOrBottom && hasFloatingText && isFloatingSize) {
-        el.remove();
-      }
-    });
-  };
-
-  replaceFooter();
-  removeFloatingUI();
-
-  window.addEventListener('load', () => {
-    replaceFooter();
-    removeFloatingUI();
-  });
-
-  setTimeout(() => {
-    replaceFooter();
-    removeFloatingUI();
-  }, 300);
-
-  setTimeout(() => {
-    replaceFooter();
-    removeFloatingUI();
-  }, 800);
-
-  setTimeout(() => {
-    replaceFooter();
-    removeFloatingUI();
-  }, 1500);
 </script>
