@@ -1,8 +1,9 @@
 import { FALLBACK_CASES } from '../data/fallbackCases.js';
 import { normalizeSlug, getStatus, cleanText } from './utils.js';
 
-let cache = { at: 0, rows: null, source: 'none', error: '' };
-const CACHE_MS = 1000 * 30;
+const LIST_PAGE_SIZE = 500;
+const LIST_CACHE_MS = 30 * 1000;
+let listCache = { at: 0, rows: null, source: 'none', error: '' };
 
 function sanitizeUrl(value = '') {
   return String(value || '')
@@ -19,39 +20,6 @@ export function getSheetUrl() {
   );
 }
 
-function parseGoogleViz(text) {
-  const match = String(text || '').match(/setResponse\((.*)\);?\s*$/s);
-  if (!match) return null;
-
-  const json = JSON.parse(match[1]);
-  const cols = (json?.table?.cols || []).map((column) => column.label || column.id);
-
-  return (json?.table?.rows || []).map((row) => {
-    const result = {};
-    (row.c || []).forEach((cell, index) => {
-      result[cols[index]] = cell?.v ?? '';
-    });
-    return result;
-  });
-}
-
-function normalizeRows(payload) {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.data)) return payload.data;
-  if (Array.isArray(payload?.rows)) return payload.rows;
-
-  if (payload?.values && Array.isArray(payload.values)) {
-    const [headers = [], ...rows] = payload.values;
-    return rows.map((values) =>
-      Object.fromEntries(
-        headers.map((header, index) => [header, values[index] ?? ''])
-      )
-    );
-  }
-
-  return [];
-}
-
 export function normalizeDomain(value = '') {
   const clean = cleanText(value)
     .toLowerCase()
@@ -60,36 +28,25 @@ export function normalizeDomain(value = '') {
     .replace(/\/.*$/, '')
     .replace(/:\d+$/, '');
 
-  const key = clean
+  return clean
     .replace(/\.co\.kr$/, '')
     .replace(/\.(com|net|org|kr)$/, '');
-
-  return key;
 }
 
 export function matchesSite(row = {}, site = {}) {
   const target = normalizeDomain(row.domain || row.siteKey || row.site || '');
-
-  // yb-recover 또는 all 한 줄이 7개 웹배포 도메인의 공통 원본입니다.
   if (!target || target === 'all' || target === '*' || target === 'yb-recover') return true;
 
-  const acceptedValues = [site.siteKey, ...(site.domains || [])]
+  const accepted = [site.siteKey, ...(site.domains || [])]
     .map(normalizeDomain)
     .filter(Boolean);
 
-  return acceptedValues.includes(target);
+  return accepted.includes(target);
 }
 
 function cleanRows(rows = []) {
   return rows
-    .filter((row) => {
-      const id = cleanText(row?.id);
-      const domain = cleanText(row?.domain);
-      const slug = cleanText(row?.slug);
-      const caseName = cleanText(row?.caseName);
-      const mainKeyword = cleanText(row?.mainKeyword);
-      return Boolean(id || domain || slug || caseName || mainKeyword);
-    })
+    .filter((row) => row && typeof row === 'object')
     .map((row) => ({
       ...row,
       domain: cleanText(row.domain),
@@ -99,17 +56,14 @@ function cleanRows(rows = []) {
     .filter((row) => row.slug);
 }
 
-async function fetchSheetRows(sheetUrl) {
-  const separator = sheetUrl.includes('?') ? '&' : '?';
-  const url = `${sheetUrl}${separator}_=${Date.now()}`;
-
+async function fetchJson(url) {
   const response = await fetch(url, {
     method: 'GET',
     redirect: 'follow',
     cache: 'no-store',
     headers: {
       accept: 'application/json,text/plain,*/*',
-      'user-agent': 'YB-CMS/2.0'
+      'user-agent': 'YB-CMS/3.0'
     }
   });
 
@@ -117,95 +71,169 @@ async function fetchSheetRows(sheetUrl) {
     throw new Error(`Google Sheet 요청 실패: ${response.status} ${response.statusText}`);
   }
 
-  const text = await response.text();
-  const trimmedText = text.trim();
-
-  if (!trimmedText) throw new Error('Google Sheet 응답이 비어 있습니다.');
-
-  if (/^<!doctype html/i.test(trimmedText) || /^<html/i.test(trimmedText)) {
+  const text = (await response.text()).trim();
+  if (!text) throw new Error('Google Sheet 응답이 비어 있습니다.');
+  if (/^<!doctype html/i.test(text) || /^<html/i.test(text)) {
     throw new Error('Google Apps Script가 JSON 대신 HTML을 반환했습니다. 웹앱 접근 권한을 확인하세요.');
   }
 
-  let rows = [];
+  let payload;
   try {
-    rows = normalizeRows(JSON.parse(trimmedText));
+    payload = JSON.parse(text);
   } catch {
-    rows = parseGoogleViz(trimmedText) || [];
+    throw new Error('Google Apps Script JSON 응답을 해석하지 못했습니다.');
   }
 
-  return cleanRows(rows);
+  if (payload?.ok === false) {
+    throw new Error(payload.error || 'Google Apps Script가 오류를 반환했습니다.');
+  }
+
+  return payload;
 }
 
-export async function getSheetCases({ force = false } = {}) {
-  const now = Date.now();
+function buildApiUrl({ domain = '', slug = '', mode = '', offset = 0, limit = LIST_PAGE_SIZE } = {}) {
+  const base = getSheetUrl();
+  if (!base) return '';
 
-  if (!force && cache.rows && now - cache.at < CACHE_MS) {
-    return cache.rows;
+  const url = new URL(base);
+  if (domain) url.searchParams.set('domain', normalizeDomain(domain));
+  if (slug) url.searchParams.set('slug', normalizeSlug(slug));
+  if (mode) url.searchParams.set('mode', mode);
+  if (mode === 'list') {
+    url.searchParams.set('offset', String(offset));
+    url.searchParams.set('limit', String(limit));
+  }
+  url.searchParams.set('_', String(Date.now()));
+  return url.toString();
+}
+
+async function fetchCaseBySlug(slug, site = {}) {
+  const apiUrl = buildApiUrl({
+    domain: site.siteKey || '',
+    slug
+  });
+
+  if (!apiUrl) throw new Error('SHEET_JSON_URL 환경변수가 없습니다.');
+
+  const payload = await fetchJson(apiUrl);
+  const rows = cleanRows(Array.isArray(payload?.data) ? payload.data : []);
+  return rows[0] || null;
+}
+
+async function fetchAllCases(site = {}) {
+  const all = [];
+  let offset = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    const apiUrl = buildApiUrl({
+      domain: site.siteKey || '',
+      mode: 'list',
+      offset,
+      limit: LIST_PAGE_SIZE
+    });
+
+    if (!apiUrl) throw new Error('SHEET_JSON_URL 환경변수가 없습니다.');
+
+    const payload = await fetchJson(apiUrl);
+    const rows = cleanRows(Array.isArray(payload?.data) ? payload.data : []);
+    all.push(...rows);
+
+    hasMore = Boolean(payload?.hasMore);
+    offset += rows.length;
+
+    if (!rows.length || offset > 50000) break;
   }
 
-  const sheetUrl = getSheetUrl();
+  return all;
+}
 
-  if (!sheetUrl) {
-    cache = {
-      at: now,
-      rows: cleanRows(FALLBACK_CASES),
-      source: 'fallback',
-      error: 'SHEET_JSON_URL 환경변수가 없습니다.'
-    };
-    console.error('[sheet]', cache.error);
-    return cache.rows;
+export async function getSheetCases({ force = false, site = {} } = {}) {
+  const now = Date.now();
+  if (!force && listCache.rows && now - listCache.at < LIST_CACHE_MS) return listCache.rows;
+
+  if (!getSheetUrl()) {
+    const rows = cleanRows(FALLBACK_CASES).filter((row) => matchesSite(row, site));
+    listCache = { at: now, rows, source: 'fallback', error: 'SHEET_JSON_URL 환경변수가 없습니다.' };
+    return rows;
   }
 
   try {
-    const rows = await fetchSheetRows(sheetUrl);
-    cache = { at: now, rows, source: 'sheet', error: '' };
-    console.log('[sheet] 불러온 문서 수:', rows.length);
+    const rows = await fetchAllCases(site);
+    listCache = { at: now, rows, source: 'sheet', error: '' };
     return rows;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    cache = {
-      at: now,
-      rows: cleanRows(FALLBACK_CASES),
-      source: 'fallback',
-      error: message
-    };
-    console.error('[sheet] Google Sheet 불러오기 실패:', error);
-    return cache.rows;
+    const rows = cleanRows(FALLBACK_CASES).filter((row) => matchesSite(row, site));
+    listCache = { at: now, rows, source: 'fallback', error: message };
+    console.error('[sheet] 목록 조회 실패:', error);
+    return rows;
   }
 }
 
 export async function getCaseBySlug(slug, site = {}) {
-  const rows = await getSheetCases();
-  const normalizedSlug = normalizeSlug(slug).toLowerCase();
+  const normalizedSlug = normalizeSlug(slug);
+  if (!normalizedSlug) return null;
 
-  return rows.find((row) =>
-    normalizeSlug(row.slug).toLowerCase() === normalizedSlug &&
-    matchesSite(row, site)
-  ) || null;
+  try {
+    return await fetchCaseBySlug(normalizedSlug, site);
+  } catch (error) {
+    console.error('[sheet] 개별 문서 조회 실패:', error);
+    const fallback = cleanRows(FALLBACK_CASES);
+    return fallback.find((row) =>
+      normalizeSlug(row.slug).toLowerCase() === normalizedSlug.toLowerCase() &&
+      matchesSite(row, site)
+    ) || null;
+  }
 }
 
 export async function getPublishedCases(site = {}) {
-  const rows = await getSheetCases();
+  const rows = await getSheetCases({ site });
   return rows.filter((row) => getStatus(row) === 'published' && matchesSite(row, site));
 }
 
 export async function getSheetDiagnostics(slug = '', site = {}) {
-  const rows = await getSheetCases({ force: true });
-  const normalizedSlug = normalizeSlug(slug).toLowerCase();
-  const row = rows.find((item) =>
-    normalizeSlug(item.slug).toLowerCase() === normalizedSlug &&
-    matchesSite(item, site)
-  ) || null;
+  const normalizedSlug = normalizeSlug(slug);
+  const envConfigured = Boolean(getSheetUrl());
 
-  return {
-    envConfigured: Boolean(getSheetUrl()),
-    source: cache.source,
-    error: cache.error,
-    rowCount: rows.length,
-    siteKey: site?.siteKey || '',
-    slug: normalizedSlug,
-    matched: Boolean(row),
-    matchedDomain: row?.domain || '',
-    matchedStatus: row?.status || ''
-  };
+  if (!envConfigured) {
+    return {
+      envConfigured: false,
+      source: 'fallback',
+      error: 'SHEET_JSON_URL 환경변수가 없습니다.',
+      rowCount: 0,
+      siteKey: site?.siteKey || '',
+      slug: normalizedSlug,
+      matched: false,
+      matchedDomain: '',
+      matchedStatus: ''
+    };
+  }
+
+  try {
+    const row = normalizedSlug ? await fetchCaseBySlug(normalizedSlug, site) : null;
+    return {
+      envConfigured: true,
+      source: 'sheet',
+      error: '',
+      rowCount: row ? 1 : 0,
+      siteKey: site?.siteKey || '',
+      slug: normalizedSlug,
+      matched: Boolean(row),
+      matchedDomain: row?.domain || '',
+      matchedStatus: row?.status || ''
+    };
+  } catch (error) {
+    return {
+      envConfigured: true,
+      source: 'fallback',
+      error: error instanceof Error ? error.message : String(error),
+      rowCount: 0,
+      siteKey: site?.siteKey || '',
+      slug: normalizedSlug,
+      matched: false,
+      matchedDomain: '',
+      matchedStatus: ''
+    };
+  }
 }

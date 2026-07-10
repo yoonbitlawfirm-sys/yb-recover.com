@@ -11,7 +11,7 @@ export async function GET({ url, request }) {
 
   return new Response(JSON.stringify({
     ok: diagnostics.envConfigured && diagnostics.source === 'sheet',
-    build: '20260710-final',
+    build: '20260710-final-v4',
     host,
     ...diagnostics
   }, null, 2), {
@@ -19,7 +19,7 @@ export async function GET({ url, request }) {
     headers: {
       'content-type': 'application/json; charset=utf-8',
       'cache-control': 'no-store, max-age=0',
-      'x-yb-build': '20260710-final'
+      'x-yb-build': '20260710-final-v4'
     }
   });
 }

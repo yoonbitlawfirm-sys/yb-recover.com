@@ -1,0 +1,21 @@
+최종 적용 순서
+
+1. 프로젝트 전체를 기존 폴더에 덮어씁니다.
+2. google-apps-script/Code.gs 전체를 Apps Script Code.gs에 붙여넣습니다.
+3. Apps Script 저장 후 Deploy > Manage deployments > Edit > New version > Deploy 합니다.
+4. 시트 탭 이름은 정확히 '네이버 웹'입니다.
+5. Vercel SHEET_JSON_URL은 현재 Apps Script /exec 주소를 유지합니다. 새 배포 URL이 바뀐 경우에만 교체합니다.
+6. Git 배포:
+   git add .
+   git commit -m "final v4 direct cms lookup"
+   git push origin main
+7. Vercel Ready 후 확인:
+   https://yb-case.com/api/cms-health?slug=테스트
+   matched:true 확인 후
+   https://yb-case.com/scam/테스트
+
+이번 수정 핵심
+- Vercel이 시트 전체를 읽지 않고 domain+slug로 Apps Script에 직접 조회합니다.
+- 네이버 웹 5열 간편 시트를 사용합니다.
+- 목록/sitemap/RSS는 500개씩 페이지네이션 조회합니다.
+- Apps Script 시트 이름은 '네이버 웹'으로 통일했습니다.

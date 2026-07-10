@@ -12,7 +12,7 @@ import { buildSiteCase } from '../../lib/siteCase.js';
 
 export const prerender = false;
 
-Astro.response.headers.set('x-yb-route-version', '20260710-multisite-final');
+Astro.response.headers.set('x-yb-route-version', '20260710-multisite-final-v4');
 Astro.response.headers.set('cache-control', 'no-store, max-age=0');
 
 const site = getCurrentSite(Astro.url.host);
