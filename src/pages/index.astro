@@ -3,6 +3,7 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import MainHome from '../components/MainHome.astro';
+import FloatingCTA from '../components/FloatingCTA.astro';
 import { getCurrentSite } from '../config/sites.js';
 
 export const prerender = false;
@@ -24,6 +25,58 @@ const pageDescription =
 const siteName =
   site?.siteName ||
   '법무법인 윤빛 금융사기 피해회복센터';
+
+const pageKeywords = Array.isArray(site?.keywords) ? site.keywords.join(', ') : '';
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${origin}/#organization`,
+      name: site.operatorName || siteName,
+      url: origin,
+      logo: new URL(site.logo || '/images/yoonbit-logo-cutout.png', origin).toString(),
+      image: ogImageUrl,
+      telephone: site.phone,
+      email: site.email,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: site.address,
+        addressCountry: 'KR'
+      },
+      contactPoint: [{
+        '@type': 'ContactPoint',
+        telephone: site.phone,
+        contactType: 'customer support',
+        availableLanguage: ['Korean']
+      }]
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${origin}/#website`,
+      url: origin,
+      name: siteName,
+      description: pageDescription,
+      inLanguage: 'ko-KR',
+      publisher: { '@id': `${origin}/#organization` },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${origin}/scam/{search_term_string}`,
+        'query-input': 'required name=search_term_string'
+      }
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${canonicalUrl}#webpage`,
+      url: canonicalUrl,
+      name: pageTitle,
+      description: pageDescription,
+      inLanguage: 'ko-KR',
+      isPartOf: { '@id': `${origin}/#website` },
+      about: { '@id': `${origin}/#organization` }
+    }
+  ]
+};
 ---
 
 <!doctype html>
@@ -43,14 +96,16 @@ const siteName =
       content={pageDescription}
     />
 
+    {pageKeywords && <meta name="keywords" content={pageKeywords} />}
+
     <meta
       name="robots"
-      content="index, follow, max-image-preview:large"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
     />
 
     <meta
       name="googlebot"
-      content="index, follow, max-image-preview:large"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
     />
 
     <meta
@@ -77,6 +132,8 @@ const siteName =
       rel="canonical"
       href={canonicalUrl}
     />
+    <link rel="alternate" hreflang="ko-KR" href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
 
     <!-- 파비콘 -->
     <link
@@ -182,6 +239,8 @@ const siteName =
       name="twitter:image"
       content={ogImageUrl}
     />
+
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />
   </head>
 
   <body>
@@ -225,7 +284,9 @@ const siteName =
         });
       }
     </script>
-      {site.siteKey === 'yb-recover' && (
+      <FloatingCTA site={site} label={`${site.shortName || site.siteName} 상담`} />
+
+    {site.siteKey === 'yb-recover' && (
       <>
         <script is:inline type="text/javascript">var hpt_info={'_account':'UHPT-300506','_server':'a300'};</script>
         <script is:inline src="//cdn.smlog.co.kr/core/smart_renew.js" charset="utf-8"></script>

@@ -1,10 +1,351 @@
 ---
-const { site, label = '금융사기 피해 상담' } = Astro.props;
+import ConsultForm from './ConsultForm.astro';
+
+const {
+  site = {},
+  label = '금융사기 피해 상담',
+} = Astro.props;
+
+const phone = site?.phone || '010-2175-4252';
+const phoneHref = site?.telLink || 'tel:01021754252';
+const kakaoHref = site?.kakaoUrl || 'https://open.kakao.com/o/sEEHGIti';
 ---
-<div class="yb-floating">
-  <div class="yb-floating-in">
-    <span><strong>{label}</strong> · 추가 송금 전 정황 확인</span>
-    <a class="yb-pill primary" href={site.telLink}>전화 상담</a>
-    <a class="yb-pill" href={site.kakaoUrl} target="_blank" rel="noopener">카카오 상담</a>
+
+<aside
+  id="yb-quick-consult"
+  class="yb-quick-consult"
+  aria-label="빠른 상담"
+  data-yb-floating-cta
+>
+  <a class="yb-quick-consult__item yb-quick-consult__item--phone" href={phoneHref}>
+    <span class="yb-quick-consult__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.46 15.46 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1C10.61 21 3 13.39 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2Z"/></svg>
+    </span>
+    <span class="yb-quick-consult__copy">
+      <small>{phone}</small>
+      <strong>전화 상담</strong>
+    </span>
+  </a>
+
+  <a
+    class="yb-quick-consult__item yb-quick-consult__item--kakao"
+    href={kakaoHref}
+    target="_blank"
+    rel="noopener noreferrer"
+  >
+    <span class="yb-quick-consult__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 3C6.48 3 2 6.58 2 11c0 2.82 1.82 5.29 4.56 6.72L5.4 22l4.91-2.88c.55.08 1.12.12 1.69.12 5.52 0 10-3.58 10-8.24S17.52 3 12 3Z"/></svg>
+    </span>
+    <span class="yb-quick-consult__copy">
+      <small>실시간 문의</small>
+      <strong>카카오 상담</strong>
+    </span>
+  </a>
+
+  <button
+    class="yb-quick-consult__item yb-quick-consult__item--form"
+    type="button"
+    data-yb-consult-open
+    aria-controls="yb-consult-dialog"
+    aria-haspopup="dialog"
+  >
+    <span class="yb-quick-consult__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 5h10V6H7v2Zm0 5h10v-2H7v2Zm0 5h6v-2H7v2Z"/></svg>
+    </span>
+    <span class="yb-quick-consult__copy">
+      <small>24시간 접수</small>
+      <strong>상담 신청</strong>
+    </span>
+  </button>
+</aside>
+
+<dialog id="yb-consult-dialog" class="yb-consult-dialog" aria-labelledby="yb-consult-dialog-title">
+  <div class="yb-consult-dialog__panel">
+    <div class="yb-consult-dialog__head">
+      <div>
+        <small>CONSULTATION</small>
+        <h2 id="yb-consult-dialog-title">상담 신청</h2>
+      </div>
+      <button type="button" class="yb-consult-dialog__close" data-yb-consult-close aria-label="상담창 닫기">×</button>
+    </div>
+    <p class="yb-consult-dialog__lead">현재 상황과 연락처를 남겨주시면 담당자가 확인 후 순차적으로 연락드립니다.</p>
+    <ConsultForm site={site} caseName={label} />
   </div>
-</div>
+</dialog>
+
+<script is:inline>
+  (() => {
+    const dialog = document.getElementById('yb-consult-dialog');
+    const openButton = document.querySelector('[data-yb-consult-open]');
+    const closeButton = dialog?.querySelector('[data-yb-consult-close]');
+
+    const openDialog = () => {
+      if (!dialog) return;
+      if (typeof dialog.showModal === 'function') dialog.showModal();
+      else dialog.setAttribute('open', '');
+      document.documentElement.classList.add('yb-consult-dialog-open');
+    };
+
+    const closeDialog = () => {
+      if (!dialog) return;
+      if (typeof dialog.close === 'function') dialog.close();
+      else dialog.removeAttribute('open');
+      document.documentElement.classList.remove('yb-consult-dialog-open');
+    };
+
+    openButton?.addEventListener('click', openDialog);
+    closeButton?.addEventListener('click', closeDialog);
+    dialog?.addEventListener('close', () => {
+      document.documentElement.classList.remove('yb-consult-dialog-open');
+    });
+    dialog?.addEventListener('click', (event) => {
+      if (event.target === dialog) closeDialog();
+    });
+  })();
+</script>
+
+<style is:global>
+  html {
+    scroll-padding-bottom: 104px;
+  }
+
+  body {
+    padding-bottom: max(96px, calc(82px + env(safe-area-inset-bottom))) !important;
+  }
+
+  html.yb-consult-dialog-open {
+    overflow: hidden;
+  }
+
+  #yb-quick-consult.yb-quick-consult {
+    position: fixed !important;
+    z-index: 2147482000 !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    width: min(calc(100% - 20px), 760px) !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: translateX(-50%) !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    overflow: hidden !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    border-radius: 18px !important;
+    background: rgba(5, 10, 18, 0.96) !important;
+    box-shadow: 0 20px 55px rgba(0, 0, 0, 0.42) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    backdrop-filter: blur(18px) !important;
+  }
+
+  #yb-quick-consult .yb-quick-consult__item {
+    appearance: none !important;
+    min-width: 0 !important;
+    min-height: 70px !important;
+    margin: 0 !important;
+    padding: 9px 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+    border: 0 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 0 !important;
+    color: #ffffff !important;
+    background: transparent !important;
+    text-decoration: none !important;
+    font-family: inherit !important;
+    line-height: 1.15 !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  #yb-quick-consult .yb-quick-consult__item:last-child {
+    border-right: 0 !important;
+  }
+
+  #yb-quick-consult .yb-quick-consult__item--kakao {
+    color: #171717 !important;
+    background: #fee500 !important;
+  }
+
+  #yb-quick-consult .yb-quick-consult__item--form {
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #9d202a, #6f111a) !important;
+  }
+
+  #yb-quick-consult .yb-quick-consult__item:hover {
+    filter: brightness(1.07);
+  }
+
+  #yb-quick-consult .yb-quick-consult__item:focus-visible {
+    outline: 3px solid #ffffff !important;
+    outline-offset: -4px !important;
+  }
+
+  #yb-quick-consult .yb-quick-consult__icon {
+    width: 25px !important;
+    height: 25px !important;
+    flex: 0 0 25px !important;
+    display: grid !important;
+    place-items: center !important;
+    color: currentColor !important;
+  }
+
+  #yb-quick-consult .yb-quick-consult__icon svg {
+    width: 100% !important;
+    height: 100% !important;
+    display: block !important;
+    fill: currentColor !important;
+  }
+
+  #yb-quick-consult .yb-quick-consult__copy {
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 3px !important;
+    color: inherit !important;
+  }
+
+  #yb-quick-consult small {
+    display: block !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    color: inherit !important;
+    opacity: 0.72 !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    line-height: 1.1 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  #yb-quick-consult strong {
+    display: block !important;
+    color: inherit !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.025em !important;
+    white-space: nowrap !important;
+  }
+
+  .yb-consult-dialog {
+    width: min(calc(100% - 24px), 620px);
+    max-height: calc(100dvh - 32px);
+    margin: auto;
+    padding: 0;
+    overflow: auto;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 22px;
+    color: #ffffff;
+    background: #07101d;
+    box-shadow: 0 35px 110px rgba(0, 0, 0, 0.58);
+  }
+
+  .yb-consult-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.74);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+
+  .yb-consult-dialog__panel {
+    padding: 28px;
+  }
+
+  .yb-consult-dialog__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .yb-consult-dialog__head small {
+    color: #d6b36b;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+  }
+
+  .yb-consult-dialog__head h2 {
+    margin: 7px 0 0;
+    color: #ffffff;
+    font-size: 30px;
+    letter-spacing: -0.05em;
+  }
+
+  .yb-consult-dialog__close {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .yb-consult-dialog__lead {
+    margin: 16px 0 22px;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 560px) {
+    body {
+      padding-bottom: max(88px, calc(74px + env(safe-area-inset-bottom))) !important;
+    }
+
+    #yb-quick-consult.yb-quick-consult {
+      bottom: max(7px, env(safe-area-inset-bottom)) !important;
+      width: calc(100% - 14px) !important;
+      border-radius: 14px !important;
+    }
+
+    #yb-quick-consult .yb-quick-consult__item {
+      min-height: 62px !important;
+      padding: 8px 4px !important;
+      gap: 5px !important;
+    }
+
+    #yb-quick-consult .yb-quick-consult__icon {
+      width: 20px !important;
+      height: 20px !important;
+      flex-basis: 20px !important;
+    }
+
+    #yb-quick-consult small {
+      font-size: 9px !important;
+    }
+
+    #yb-quick-consult strong {
+      font-size: clamp(12px, 3.5vw, 15px) !important;
+    }
+
+    .yb-consult-dialog__panel {
+      padding: 22px 18px;
+    }
+  }
+
+  @media (max-width: 390px) {
+    #yb-quick-consult .yb-quick-consult__item {
+      flex-direction: column !important;
+      gap: 3px !important;
+    }
+
+    #yb-quick-consult .yb-quick-consult__copy {
+      align-items: center !important;
+    }
+
+    #yb-quick-consult small {
+      display: none !important;
+    }
+  }
+</style>

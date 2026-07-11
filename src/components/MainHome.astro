@@ -142,13 +142,19 @@ const isRecover = site?.siteKey === 'yb-recover';
       id="launchSearch"
       action="/scam/출금거부"
       method="get"
+      role="search"
       aria-label="피해 정황 검색"
+      data-launch-search
     >
       <input
         id="launchSearchInput"
+        name="keyword"
         type="search"
         placeholder={launcher.placeholder || "업체명 또는 키워드를 입력하세요"}
         autocomplete="off"
+        enterkeyhint="search"
+        aria-label="업체명 또는 피해 키워드"
+        data-launch-search-input
       />
 
       <button type="submit" aria-label="검색">
@@ -278,13 +284,13 @@ const isRecover = site?.siteKey === 'yb-recover';
     outline: 0 !important;
     background: transparent !important;
     color: rgba(255, 255, 255, 0.9) !important;
-    font-size: 14.5px !important;
+    font-size: 16px !important;
     letter-spacing: -0.025em;
     font-weight: 300 !important;
   }
 
   .launch-searchbox input::placeholder {
-    color: rgba(255, 255, 255, 0.36) !important;
+    color: rgba(255, 255, 255, 0.62) !important;
     font-weight: 300;
   }
 
@@ -426,7 +432,7 @@ const isRecover = site?.siteKey === 'yb-recover';
     }
 
     .launch-searchbox input {
-      font-size: 14px !important;
+      font-size: 16px !important;
     }
 
     .launch-searchbox button {
@@ -497,10 +503,7 @@ const isRecover = site?.siteKey === 'yb-recover';
       const keyword = (input.value || '').replace(/\s+/g, '').trim() || '출금거부';
 
       const encodedKeyword = encodeURIComponent(keyword);
-      const host = window.location.hostname.replace(/^www\./, '').toLowerCase();
-      location.href = host === 'yb-recover.com'
-        ? `https://yb-response.com/scam/${encodedKeyword}`
-        : `/scam/${encodedKeyword}`;
+      window.location.assign(`/scam/${encodedKeyword}`);
     });
   }
 </script>

@@ -1,53 +1,11 @@
-YB 통합 웹배포 최종본 적용 안내
+최종 배포 안내 — 2026-07-11
 
-[완성 구조]
-1. yb-recover.com은 기존 메인 발사대 그대로 유지됩니다.
-2. 구글시트 WEB_CONTENT의 한 줄이 나머지 7개 도메인에 동시에 공급됩니다.
-3. 시트에서 선택 행을 발행하면 7개 도메인에 같은 슬러그 페이지가 동시에 공개됩니다.
-4. 선택 행 전체 삭제(410)를 누르면 7개 페이지가 동시에 삭제 상태가 됩니다.
-5. 각 도메인은 같은 키워드를 사용하지만 제목, 본문, 위험 신호, 절차, FAQ, SEO 제목·설명이 사이트 역할에 맞게 자동으로 달라집니다.
+1. 기존 프로젝트를 백업합니다.
+2. 이 수정본을 기존 프로젝트에 덮어씁니다. 단, 기존 .git 폴더와 .env 파일은 유지합니다.
+3. google-apps-script/Code.gs 전체를 Apps Script에 붙여넣고 새 버전으로 배포합니다.
+4. npm ci 후 npm run build를 실행합니다.
+5. git add . / git commit / git push로 Vercel을 재배포합니다.
+6. 배포 후 yb-recover.com에서 키워드를 검색해 yb-recover.com/scam/키워드로 이동하는지 확인합니다.
+7. 전화 상담 / 카카오 상담 / 상담 신청 3개 버튼과 SEO 메타를 확인합니다.
 
-[7개 자동 생성 주소 예시]
-시트 slug가 test-page이면:
-- https://yb-response.com/scam/test-page
-- https://yb-alert.com/scam/test-page
-- https://yb-check.com/scam/test-page
-- https://yb-case.com/scam/test-page
-- https://yb-safe.com/scam/test-page
-- https://yb-help.com/scam/test-page
-- https://yb-watch.co.kr/scam/test-page
-
-[시트 사용법]
-1. WEB_CONTENT 시트에 새 행을 작성합니다.
-2. mainKeyword 또는 caseName에 핵심 키워드를 입력합니다.
-3. slug에 주소용 영문 또는 한글을 입력합니다.
-4. 해당 행을 선택합니다.
-5. 상단 메뉴 웹문서 관리 → 선택 행 전체 발행(7개)을 누릅니다.
-6. domain은 자동으로 yb-recover, status는 published로 입력됩니다.
-
-[전체 삭제]
-해당 행 선택 → 웹문서 관리 → 선택 행 전체 삭제(410)
-7개 도메인의 같은 슬러그가 모두 410 삭제 상태가 됩니다.
-행 자체를 완전히 삭제하면 7개 도메인에서 모두 404가 됩니다.
-
-[반드시 해야 하는 Apps Script 재배포]
-1. google-apps-script/Code.gs 전체를 구글 Apps Script Code.gs에 붙여넣습니다.
-2. 저장합니다.
-3. Deploy → Manage deployments → Edit(연필)
-4. Version → New version
-5. Execute as → Me
-6. Who has access → Anyone
-7. Deploy
-기존 Web app URL이 같으면 Vercel 환경변수는 바꿀 필요 없습니다.
-
-[프로젝트 배포]
-압축 해제 후 프로젝트 폴더에서:
-git add .
-git commit -m "final unified 7-domain publishing"
-git push origin main
-
-[Vercel]
-최신 배포가 Ready / Production인지 확인합니다.
-
-[검증]
-시트에 테스트 행 하나를 발행한 뒤 7개 주소를 각각 열어 제목과 본문, 색감이 서로 다르게 출력되는지 확인합니다.
+세부 내용은 00_배포방법_필독.txt를 확인하십시오.

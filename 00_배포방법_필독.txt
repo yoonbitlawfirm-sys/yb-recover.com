@@ -1,0 +1,14 @@
+[배포 순서]
+
+1. 기존 GitHub/Vercel 프로젝트를 먼저 백업합니다.
+2. 이 폴더의 파일을 기존 프로젝트에 덮어쓰되, 기존 .git 폴더와 .env 파일은 삭제하지 않습니다.
+3. google-apps-script/Code.gs를 구글 Apps Script의 Code.gs에 전체 붙여넣고 새 버전으로 배포합니다.
+4. 프로젝트 폴더에서 npm ci 후 npm run build가 성공하는지 확인합니다.
+5. git add . / git commit / git push로 Vercel 재배포합니다.
+6. Vercel 배포 완료 후 도메인 캐시를 새로고침합니다.
+
+[확인 항목]
+- yb-recover.com 검색 → yb-recover.com/scam/키워드
+- 전화 상담 / 카카오 상담 / 상담 신청 3개 버튼 표시
+- 상담 신청 버튼 클릭 시 신청창 열림
+- 페이지 소스에서 title, description, canonical, OG, Twitter, JSON-LD 확인

@@ -1,20 +1,11 @@
-최종 적용 순서
+최종 배포 안내 — 2026-07-11
 
-1. 이 프로젝트 전체를 기존 yb-recover.com 프로젝트에 덮어씁니다.
-2. google-apps-script/Code.gs 전체를 Apps Script에 붙여넣습니다.
-3. Apps Script 저장 후 기존 웹앱 배포를 New version으로 갱신합니다.
-4. Vercel 환경변수 SHEET_JSON_URL은 실제 /exec 주소를 유지합니다.
-5. 아래 명령으로 배포합니다.
+1. 기존 프로젝트를 백업합니다.
+2. 이 수정본을 기존 프로젝트에 덮어씁니다. 단, 기존 .git 폴더와 .env 파일은 유지합니다.
+3. google-apps-script/Code.gs 전체를 Apps Script에 붙여넣고 새 버전으로 배포합니다.
+4. npm ci 후 npm run build를 실행합니다.
+5. git add . / git commit / git push로 Vercel을 재배포합니다.
+6. 배포 후 yb-recover.com에서 키워드를 검색해 yb-recover.com/scam/키워드로 이동하는지 확인합니다.
+7. 전화 상담 / 카카오 상담 / 상담 신청 3개 버튼과 SEO 메타를 확인합니다.
 
-   git add .
-   git commit -m "absolute final launcher and cms"
-   git push origin main
-
-확인 항목
-- yb-recover.com 검색창 키워드 입력 → yb-response.com/scam/키워드 이동
-- 발사대 하단 플로팅 없음
-- 발사포 상단/하단 플로팅 없음
-- 발사포 전화·카카오 버튼은 본문 안 일반 버튼으로만 존재
-- 상담 신청은 /api/send-mail 사용
-- 시트 탭 이름: 네이버 웹
-- 도메인별 문구·SEO·색감 분리
+세부 내용은 00_배포방법_필독.txt를 확인하십시오.
