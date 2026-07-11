@@ -2,29 +2,27 @@
 import '../../styles/global.css';
 import CasePage from '../../components/CasePage.astro';
 import FloatingCTA from '../../components/FloatingCTA.astro';
+import Footer from '../../components/Footer.astro';
 import { getCurrentSite } from '../../config/sites.js';
-import { getCaseBySlug, getSheetDiagnostics } from '../../lib/sheet.js';
+import { getCaseBySlug } from '../../lib/sheet.js';
 import { getStatus, normalizeSlug } from '../../lib/utils.js';
 import { buildCaseSeo, caseJsonLdGraph } from '../../lib/seo.js';
 import { buildSiteCase } from '../../lib/siteCase.js';
+import { getThemeStyle } from '../../lib/theme.js';
 
 export const prerender = false;
 
-Astro.response.headers.set('x-yb-route-version', '20260711-routing-floating-seo-v2');
+Astro.response.headers.set('x-yb-route-version', '20260711-final-v4-complete');
 Astro.response.headers.set('cache-control', 'no-store, max-age=0');
 
 const site = getCurrentSite(Astro.url.host);
 const slug = normalizeSlug(Astro.params.slug || '');
-
-
 const sourceRow = await getCaseBySlug(slug, site);
 const row = sourceRow ? buildSiteCase(sourceRow, site) : null;
-const diagnostics = row ? null : await getSheetDiagnostics(slug, site);
 
 if (!row) Astro.response.status = 404;
 
 const status = row ? getStatus(row) : 'missing';
-
 if (status === 'deleted') Astro.response.status = 410;
 if (status === 'disabled' || status === 'draft') Astro.response.status = 404;
 
@@ -32,11 +30,12 @@ if (status === 'redirect' && row?.redirectTo) {
   return Astro.redirect(row.redirectTo, 302);
 }
 
-const seo = row
+const isVisible = Boolean(row) && !['deleted', 'disabled', 'draft'].includes(status);
+const seo = isVisible
   ? buildCaseSeo(row, site, Astro.url)
   : {
-      title: `페이지를 찾을 수 없습니다 | ${site.siteName}`,
-      description: '등록되지 않았거나 공개 상태가 아닌 페이지입니다.',
+      title: `${status === 'deleted' ? '삭제된 페이지' : '페이지를 찾을 수 없습니다'} | ${site.siteName}`,
+      description: '등록되지 않았거나 현재 공개 상태가 아닌 페이지입니다.',
       canonical: new URL(`/scam/${encodeURIComponent(slug)}`, Astro.url.origin).toString(),
       keywords: [],
       name: slug || '금융사기',
@@ -45,77 +44,96 @@ const seo = row
       caseType: ''
     };
 
-const robots = row && status !== 'noindex' ? 'index, follow' : 'noindex, nofollow';
-const jsonLd = row ? caseJsonLdGraph(row, site, Astro.url, seo) : null;
-const ogImage = `${Astro.url.origin}/images/yoonbit-og.png?v=20260710`;
-const favicon = '/images/favicon.png?v=20260710';
+const robots = isVisible && status !== 'noindex'
+  ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+  : 'noindex, nofollow, noarchive';
+const jsonLd = isVisible ? caseJsonLdGraph(row, site, Astro.url, seo) : null;
+const ogImage = new URL(site.ogImage || '/images/yoonbit-og.png?v=20260711', Astro.url.origin).toString();
+const favicon = site.favicon || '/images/favicon.png?v=20260711';
+const keywordText = Array.isArray(seo.keywords) ? seo.keywords.join(', ') : '';
+const themeStyle = getThemeStyle(site);
 ---
 
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
     <title>{seo.title}</title>
     <meta name="description" content={seo.description} />
-    {seo.keywords?.length > 0 && <meta name="keywords" content={seo.keywords.join(', ')} />}
-    <meta name="author" content={site.operatorName} />
-    <meta name="theme-color" content={site.colors?.bg || '#02050b'} />
+    {keywordText && <meta name="keywords" content={keywordText} />}
     <meta name="robots" content={robots} />
     <meta name="googlebot" content={robots} />
     <meta name="NaverBot" content={robots} />
     <meta name="Yeti" content={robots} />
+    <meta name="author" content={site.operatorName} />
+    <meta name="application-name" content={site.siteName} />
+    <meta name="theme-color" content={site.colors?.bg || '#02050b'} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
+
     <link rel="canonical" href={seo.canonical} />
     <link rel="alternate" hreflang="ko-KR" href={seo.canonical} />
     <link rel="alternate" hreflang="x-default" href={seo.canonical} />
     <link rel="icon" type="image/png" href={favicon} />
     <link rel="shortcut icon" type="image/png" href={favicon} />
     <link rel="apple-touch-icon" href={favicon} />
-    <meta property="og:type" content={row ? 'article' : 'website'} />
+    <link rel="image_src" href={ogImage} />
+
+    <meta property="og:type" content={isVisible ? 'article' : 'website'} />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:site_name" content={site.siteName} />
     <meta property="og:title" content={seo.title} />
     <meta property="og:description" content={seo.description} />
     <meta property="og:url" content={seo.canonical} />
-    <meta property="og:site_name" content={site.siteName} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:secure_url" content={ogImage} />
     <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={seo.title} />
-    <meta property="og:locale" content="ko_KR" />
-    {row && seo.publishedAt && <meta property="article:published_time" content={seo.publishedAt} />}
-    {row && seo.updatedAt && <meta property="article:modified_time" content={seo.updatedAt} />}
+    {isVisible && seo.publishedAt && <meta property="article:published_time" content={seo.publishedAt} />}
+    {isVisible && seo.updatedAt && <meta property="article:modified_time" content={seo.updatedAt} />}
+    {isVisible && <meta property="article:author" content={site.operatorName} />}
+    {isVisible && <meta property="article:section" content={seo.caseType || '금융사기 피해 대응'} />}
+
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={seo.title} />
     <meta name="twitter:description" content={seo.description} />
     <meta name="twitter:image" content={ogImage} />
-    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <meta name="twitter:image:alt" content={seo.title} />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
   </head>
 
-  <body>
-    {row && status !== 'deleted' && status !== 'disabled' && status !== 'draft' ? (
-      <CasePage site={site} row={row} />
+  <body class={`yb-theme yb-theme--${site.theme}`} style={themeStyle}>
+    {isVisible ? (
+      <>
+        <CasePage site={site} row={row} />
+        <FloatingCTA site={site} formHref="#consult" />
+      </>
     ) : (
-      <main class="yb-cms-error">
-        <section>
-          <span>{status === 'deleted' ? '410' : '404'}</span>
-          <h1>{status === 'deleted' ? '삭제된 페이지입니다.' : '페이지를 찾을 수 없습니다.'}</h1>
-          <p>
-            {status === 'draft' || status === 'disabled'
-              ? '현재 비공개 상태인 페이지입니다.'
-              : '등록된 주소와 게시 상태를 다시 확인해 주세요.'}
-          </p>
-          {diagnostics && (
-            <small>
-              CMS: {diagnostics.source} · 문서 {diagnostics.rowCount}개 · 도메인 {diagnostics.siteKey} · 슬러그 {diagnostics.slug}
-              {diagnostics.error ? ` · ${diagnostics.error}` : ''}
-            </small>
-          )}
-        </section>
-      </main>
+      <>
+        <main class="yb-cms-error">
+          <section>
+            <span>{status === 'deleted' ? '410' : '404'}</span>
+            <h1>{status === 'deleted' ? '삭제된 페이지입니다.' : '페이지를 찾을 수 없습니다.'}</h1>
+            <p>{status === 'draft' || status === 'disabled' ? '현재 비공개 상태인 페이지입니다.' : '주소를 다시 확인하거나 발사대로 돌아가 검색해 주세요.'}</p>
+            <a href="/">발사대로 돌아가기</a>
+          </section>
+        </main>
+        <Footer site={site} compact />
+      </>
     )}
 
-    <FloatingCTA site={site} label={`${seo.name || slug} 피해 상담`} />
+    {site.siteKey === 'yb-recover' && isVisible && (
+      <>
+        <script is:inline type="text/javascript">var hpt_info={'_account':'UHPT-300506','_server':'a300'};</script>
+        <script is:inline src="//cdn.smlog.co.kr/core/smart_renew.js" charset="utf-8"></script>
+        <noscript><img src="//a300.smlog.co.kr/smart_bda?_account=300506" style="display:none;width:0;height:0;" border="0" alt="" /></noscript>
+      </>
+    )}
 
     <style>
       .yb-cms-error {
@@ -125,13 +143,48 @@ const favicon = '/images/favicon.png?v=20260710';
         padding: 120px 24px;
         color: #fff;
         text-align: center;
-        background: radial-gradient(circle at 50% 0%, rgba(47, 83, 140, .2), transparent 45%), #03070d;
+        background:
+          radial-gradient(circle at 50% 10%, var(--yb-accent-soft), transparent 42%),
+          linear-gradient(145deg, var(--yb-bg-deep), var(--yb-bg-mid), var(--yb-bg-deep));
       }
-      .yb-cms-error section { width: min(760px, 100%); }
-      .yb-cms-error span { color: #7592bd; font-weight: 800; letter-spacing: .2em; }
-      .yb-cms-error h1 { margin: 18px 0 12px; font-size: clamp(32px, 5vw, 52px); }
-      .yb-cms-error p { margin: 0; color: #aeb9c8; line-height: 1.8; }
-      .yb-cms-error small { display: block; margin-top: 24px; color: #708095; line-height: 1.7; word-break: break-all; }
+
+      .yb-cms-error section {
+        width: min(720px, 100%);
+      }
+
+      .yb-cms-error span {
+        color: var(--yb-accent-2);
+        font-size: 13px;
+        font-weight: 850;
+        letter-spacing: 0.22em;
+      }
+
+      .yb-cms-error h1 {
+        margin: 18px 0 12px;
+        font-size: clamp(32px, 5vw, 54px);
+        line-height: 1.18;
+        letter-spacing: -0.055em;
+      }
+
+      .yb-cms-error p {
+        margin: 0;
+        color: var(--yb-muted);
+        line-height: 1.8;
+      }
+
+      .yb-cms-error a {
+        min-height: 48px;
+        margin-top: 26px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 20px;
+        border: 1px solid var(--yb-accent-2);
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--yb-accent), var(--yb-accent-strong));
+        color: var(--yb-on-accent);
+        font-weight: 750;
+      }
     </style>
   </body>
 </html>

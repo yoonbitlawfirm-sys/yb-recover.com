@@ -8,7 +8,7 @@
  * 4) B~E열(상태/생성일/주소/수정일)은 자동 처리
  * 5) 한 키워드가 8개 웹배포 도메인에 동시에 반영
  * 6) 500개씩 발행하며 마지막 처리 위치를 기억
- * 7) 삭제/비공개/복구도 원본 한 행으로 7개 도메인에 동시 반영
+ * 7) 삭제/비공개/복구도 원본 한 행으로 8개 도메인에 동시 반영
  *
  * [Vercel]
  * Apps Script 웹앱 /exec URL을 Vercel 환경변수 SHEET_JSON_URL에 저장
@@ -363,7 +363,7 @@ function doGet(e) {
         });
       }
 
-      const targetDomain = DOMAIN_PROFILES[domain] ? domain : 'yb-response';
+      const targetDomain = DOMAIN_PROFILES[domain] ? domain : 'yb-recover';
       const page = buildPageData_(source, targetDomain);
 
       return createJsonResponse_({
@@ -379,7 +379,7 @@ function doGet(e) {
     // 목록 조회: sitemap/RSS용. 500개씩 페이지네이션
     if (mode === 'list' || !slug) {
       const sources = getPublishedSources_(sheet);
-      const targetDomain = DOMAIN_PROFILES[domain] ? domain : 'yb-response';
+      const targetDomain = DOMAIN_PROFILES[domain] ? domain : 'yb-recover';
       const sliced = sources.slice(offset, offset + limit);
       const data = sliced.map(source => buildPageData_(source, targetDomain));
 

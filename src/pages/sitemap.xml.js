@@ -11,6 +11,13 @@ const xmlEscape = (value = '') => String(value)
   .replaceAll('"', '&quot;')
   .replaceAll("'", '&apos;');
 
+const LEGAL_PATHS = [
+  '/privacy',
+  '/terms',
+  '/email-policy',
+  '/legal-notice'
+];
+
 export async function GET({ url }) {
   const site = getCurrentSite(url.host);
   const cases = await getPublishedCases(site);
@@ -22,6 +29,12 @@ export async function GET({ url }) {
       lastmod: cleanText(row.updatedAt || row.publishedAt) || today,
       changefreq: 'weekly',
       priority: '0.86'
+    })),
+    ...LEGAL_PATHS.map((path) => ({
+      loc: `${url.origin}${path}`,
+      lastmod: today,
+      changefreq: 'yearly',
+      priority: '0.25'
     }))
   ];
 

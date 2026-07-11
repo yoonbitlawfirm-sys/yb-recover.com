@@ -1,290 +1,75 @@
 ---
 import '../styles/global.css';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
 import MainHome from '../components/MainHome.astro';
-import FloatingCTA from '../components/FloatingCTA.astro';
 import { getCurrentSite } from '../config/sites.js';
+import { getThemeStyle } from '../lib/theme.js';
+import { buildHomeSeo, homeJsonLdGraph } from '../lib/seo.js';
 
 export const prerender = false;
 
+Astro.response.headers.set('x-yb-build-version', '20260711-final-v4-complete');
+
 const site = getCurrentSite(Astro.url.host);
-
-const origin = Astro.url.origin;
-const canonicalUrl = new URL('/', origin).toString();
-const ogImageUrl = new URL('/images/yoonbit-og.png', origin).toString();
-
-const pageTitle =
-  site?.title ||
-  '법무법인 윤빛 | 금융사기 피해회복센터';
-
-const pageDescription =
-  site?.description ||
-  '금융사기, 투자사기, 출금거부, 추가입금 요구 피해 정황을 확인하고 대응 방향을 검토합니다.';
-
-const siteName =
-  site?.siteName ||
-  '법무법인 윤빛 금융사기 피해회복센터';
-
-const pageKeywords = Array.isArray(site?.keywords) ? site.keywords.join(', ') : '';
-const structuredData = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'Organization',
-      '@id': `${origin}/#organization`,
-      name: site.operatorName || siteName,
-      url: origin,
-      logo: new URL(site.logo || '/images/yoonbit-logo-cutout.png', origin).toString(),
-      image: ogImageUrl,
-      telephone: site.phone,
-      email: site.email,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: site.address,
-        addressCountry: 'KR'
-      },
-      contactPoint: [{
-        '@type': 'ContactPoint',
-        telephone: site.phone,
-        contactType: 'customer support',
-        availableLanguage: ['Korean']
-      }]
-    },
-    {
-      '@type': 'WebSite',
-      '@id': `${origin}/#website`,
-      url: origin,
-      name: siteName,
-      description: pageDescription,
-      inLanguage: 'ko-KR',
-      publisher: { '@id': `${origin}/#organization` },
-      potentialAction: {
-        '@type': 'SearchAction',
-        target: `${origin}/scam/{search_term_string}`,
-        'query-input': 'required name=search_term_string'
-      }
-    },
-    {
-      '@type': 'WebPage',
-      '@id': `${canonicalUrl}#webpage`,
-      url: canonicalUrl,
-      name: pageTitle,
-      description: pageDescription,
-      inLanguage: 'ko-KR',
-      isPartOf: { '@id': `${origin}/#website` },
-      about: { '@id': `${origin}/#organization` }
-    }
-  ]
-};
+const seo = buildHomeSeo(site, Astro.url);
+const canonicalUrl = seo.canonical;
+const ogImageUrl = new URL(site.ogImage || '/images/yoonbit-og.png?v=20260711', Astro.url.origin).toString();
+const pageKeywords = Array.isArray(seo.keywords) ? seo.keywords.join(', ') : '';
+const robots = 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+const structuredData = homeJsonLdGraph(site, Astro.url);
+const themeStyle = getThemeStyle(site);
 ---
 
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1"
-    />
-
-    <title>{pageTitle}</title>
-
-    <meta
-      name="description"
-      content={pageDescription}
-    />
-
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
     {pageKeywords && <meta name="keywords" content={pageKeywords} />}
+    <meta name="robots" content={robots} />
+    <meta name="googlebot" content={robots} />
+    <meta name="NaverBot" content={robots} />
+    <meta name="Yeti" content={robots} />
+    <meta name="author" content={site.operatorName} />
+    <meta name="application-name" content={site.siteName} />
+    <meta name="theme-color" content={site.colors?.bg || '#02050b'} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="format-detection" content="telephone=no, address=no, email=no" />
 
-    <meta
-      name="robots"
-      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-    />
-
-    <meta
-      name="googlebot"
-      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
-    />
-
-    <meta
-      name="NaverBot"
-      content="index, follow"
-    />
-
-    <meta
-      name="Yeti"
-      content="index, follow"
-    />
-
-    <meta
-      name="author"
-      content={site.operatorName}
-    />
-
-    <meta
-      name="theme-color"
-      content="#02050b"
-    />
-
-    <link
-      rel="canonical"
-      href={canonicalUrl}
-    />
+    <link rel="canonical" href={canonicalUrl} />
     <link rel="alternate" hreflang="ko-KR" href={canonicalUrl} />
     <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+    <link rel="icon" type="image/png" href={site.favicon || '/images/favicon.png?v=20260711'} />
+    <link rel="shortcut icon" type="image/png" href={site.favicon || '/images/favicon.png?v=20260711'} />
+    <link rel="apple-touch-icon" href={site.favicon || '/images/favicon.png?v=20260711'} />
+    <link rel="image_src" href={ogImageUrl} />
 
-    <!-- 파비콘 -->
-    <link
-      rel="icon"
-      type="image/png"
-      href="/images/favicon.png?v=20260710"
-    />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:site_name" content={site.siteName} />
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:secure_url" content={ogImageUrl} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.siteName} />
 
-    <link
-      rel="shortcut icon"
-      type="image/png"
-      href="/images/favicon.png?v=20260710"
-    />
-
-    <link
-      rel="apple-touch-icon"
-      href="/images/favicon.png?v=20260710"
-    />
-
-    <!-- OG -->
-    <link
-      rel="image_src"
-      href={ogImageUrl}
-    />
-
-    <meta
-      property="og:type"
-      content="website"
-    />
-
-    <meta
-      property="og:locale"
-      content="ko_KR"
-    />
-
-    <meta
-      property="og:site_name"
-      content={siteName}
-    />
-
-    <meta
-      property="og:title"
-      content={pageTitle}
-    />
-
-    <meta
-      property="og:description"
-      content={pageDescription}
-    />
-
-    <meta
-      property="og:url"
-      content={canonicalUrl}
-    />
-
-    <meta
-      property="og:image"
-      content={ogImageUrl}
-    />
-
-    <meta
-      property="og:image:secure_url"
-      content={ogImageUrl}
-    />
-
-    <meta
-      property="og:image:type"
-      content="image/png"
-    />
-
-    <meta
-      property="og:image:width"
-      content="1200"
-    />
-
-    <meta
-      property="og:image:height"
-      content="630"
-    />
-
-    <meta
-      property="og:image:alt"
-      content={siteName}
-    />
-
-    <!-- Twitter -->
-    <meta
-      name="twitter:card"
-      content="summary_large_image"
-    />
-
-    <meta
-      name="twitter:title"
-      content={pageTitle}
-    />
-
-    <meta
-      name="twitter:description"
-      content={pageDescription}
-    />
-
-    <meta
-      name="twitter:image"
-      content={ogImageUrl}
-    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={site.siteName} />
 
     <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g, '\\u003c')} />
   </head>
 
-  <body>
-    <div class="yb-page">
-      <Header site={site} />
-
-      <main>
-        <MainHome site={site} />
-      </main>
-
-      <Footer site={site} />
-
-    </div>
-
-    <script is:inline>
-      const revealElements =
-        document.querySelectorAll('.yb-reveal');
-
-      if ('IntersectionObserver' in window) {
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                io.unobserve(entry.target);
-              }
-            });
-          },
-          {
-            threshold: 0.12,
-            rootMargin: '0px 0px -8% 0px',
-          }
-        );
-
-        revealElements.forEach((element) => {
-          io.observe(element);
-        });
-      } else {
-        revealElements.forEach((element) => {
-          element.classList.add('is-visible');
-        });
-      }
-    </script>
-      <FloatingCTA site={site} label={`${site.shortName || site.siteName} 상담`} />
+  <body class={`yb-theme yb-theme--${site.theme}`} style={themeStyle}>
+    <MainHome site={site} />
 
     {site.siteKey === 'yb-recover' && (
       <>

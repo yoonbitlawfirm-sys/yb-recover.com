@@ -1,0 +1,21 @@
+{
+  "npm_audit_metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    },
+    "dependencies": {
+      "prod": 244,
+      "dev": 0,
+      "optional": 115,
+      "peer": 1,
+      "peerOptional": 0,
+      "total": 358
+    }
+  },
+  "result": "PASS"
+}

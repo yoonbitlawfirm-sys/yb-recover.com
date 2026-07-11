@@ -1,14 +1,52 @@
-[배포 순서]
+[법무법인 윤빛 8개 사이트 최종완성본]
+버전: 2026-07-11 FINAL V4 COMPLETE
 
-1. 기존 GitHub/Vercel 프로젝트를 먼저 백업합니다.
-2. 이 폴더의 파일을 기존 프로젝트에 덮어쓰되, 기존 .git 폴더와 .env 파일은 삭제하지 않습니다.
-3. google-apps-script/Code.gs를 구글 Apps Script의 Code.gs에 전체 붙여넣고 새 버전으로 배포합니다.
-4. 프로젝트 폴더에서 npm ci 후 npm run build가 성공하는지 확인합니다.
-5. git add . / git commit / git push로 Vercel 재배포합니다.
-6. Vercel 배포 완료 후 도메인 캐시를 새로고침합니다.
+1. 적용 전
+- 현재 운영 프로젝트 전체를 백업합니다.
+- 기존 .env, .env.local, Vercel 환경변수, 도메인 설정은 삭제하지 않습니다.
 
-[확인 항목]
-- yb-recover.com 검색 → yb-recover.com/scam/키워드
-- 전화 상담 / 카카오 상담 / 상담 신청 3개 버튼 표시
-- 상담 신청 버튼 클릭 시 신청창 열림
-- 페이지 소스에서 title, description, canonical, OG, Twitter, JSON-LD 확인
+2. 프런트 소스 교체
+- 이 폴더에서 package.json, src, public, astro.config.mjs, package-lock.json을 포함한 전체 파일을 기존 프로젝트 루트에 덮어씁니다.
+- node_modules, dist, .vercel 폴더는 복사하지 않아도 됩니다.
+
+3. 로컬 확인
+npm ci
+npm run build
+
+4. Vercel 배포
+- GitHub 연동이면 변경 파일을 commit/push합니다.
+- 또는 Vercel에서 새 배포를 실행합니다.
+- 배포 후 8개 도메인의 캐시를 새로고침합니다.
+
+5. Google Apps Script 갱신(필수)
+- google-apps-script/Code.gs 전체를 구글시트의 Apps Script Code.gs에 덮어씁니다.
+- 저장 → 배포 → 배포 관리 → 기존 웹앱 수정 → 새 버전 → 배포합니다.
+- 기존 /exec 주소는 유지할 수 있습니다.
+- Vercel의 SHEET_JSON_URL 값이 해당 /exec 주소인지 확인합니다.
+
+6. Vercel 환경변수
+필수(CMS):
+SHEET_JSON_URL=https://script.google.com/macros/s/....../exec
+
+상담 신청 메일을 사용할 때:
+RESEND_API_KEY=re_...
+CONSULT_TO_EMAIL=contact@yoonbitlawfirm.com
+CONSULT_FROM_EMAIL=인증된발신자주소
+
+7. 배포 후 확인
+- 각 도메인 메인(/)에는 하단 고정 플로팅이 없어야 합니다.
+- 각 도메인 /scam/키워드에는 전화 상담 / 카카오 상담 / 상담 신청 플로팅이 보여야 합니다.
+- 메인 검색은 현재 접속한 같은 도메인의 /scam/키워드로 이동해야 합니다.
+- 8개 사이트의 구조는 동일하고 색상만 각각 달라야 합니다.
+- 하단에 법무법인 윤빛 | 사이트별 명칭, 광고책임변호사, 사업자등록번호, 주소가 표시돼야 합니다.
+- 개인정보처리방침, 이용약관, 이메일무단수집거부, 면책·광고 고지 링크가 열려야 합니다.
+
+8. 8개 색상
+- yb-recover.com: 진홍/골드
+- yb-response.com: 오렌지
+- yb-alert.com: 골드/옐로
+- yb-check.com: 그린
+- yb-case.com: 시안
+- yb-safe.com: 블루
+- yb-help.com: 인디고
+- yb-watch.co.kr: 퍼플

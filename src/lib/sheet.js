@@ -3,7 +3,9 @@ import { normalizeSlug, getStatus, cleanText } from './utils.js';
 
 const LIST_PAGE_SIZE = 500;
 const LIST_CACHE_MS = 30 * 1000;
-let listCache = { at: 0, rows: null, source: 'none', error: '' };
+const listCaches = new Map();
+
+const getCacheKey = (site = {}) => cleanText(site.siteKey || site.domains?.[0] || 'default').toLowerCase() || 'default';
 
 function sanitizeUrl(value = '') {
   return String(value || '')
@@ -35,7 +37,7 @@ export function normalizeDomain(value = '') {
 
 export function matchesSite(row = {}, site = {}) {
   const target = normalizeDomain(row.domain || row.siteKey || row.site || '');
-  if (!target || target === 'all' || target === '*' || target === 'yb-recover') return true;
+  if (!target || target === 'all' || target === '*') return true;
 
   const accepted = [site.siteKey, ...(site.domains || [])]
     .map(normalizeDomain)
@@ -150,23 +152,31 @@ async function fetchAllCases(site = {}) {
 
 export async function getSheetCases({ force = false, site = {} } = {}) {
   const now = Date.now();
-  if (!force && listCache.rows && now - listCache.at < LIST_CACHE_MS) return listCache.rows;
+  const cacheKey = getCacheKey(site);
+  const cached = listCaches.get(cacheKey);
+
+  if (!force && cached?.rows && now - cached.at < LIST_CACHE_MS) return cached.rows;
 
   if (!getSheetUrl()) {
     const rows = cleanRows(FALLBACK_CASES).filter((row) => matchesSite(row, site));
-    listCache = { at: now, rows, source: 'fallback', error: 'SHEET_JSON_URL 환경변수가 없습니다.' };
+    listCaches.set(cacheKey, {
+      at: now,
+      rows,
+      source: 'fallback',
+      error: 'SHEET_JSON_URL 환경변수가 없습니다.'
+    });
     return rows;
   }
 
   try {
     const rows = await fetchAllCases(site);
-    listCache = { at: now, rows, source: 'sheet', error: '' };
+    listCaches.set(cacheKey, { at: now, rows, source: 'sheet', error: '' });
     return rows;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     const rows = cleanRows(FALLBACK_CASES).filter((row) => matchesSite(row, site));
-    listCache = { at: now, rows, source: 'fallback', error: message };
-    console.error('[sheet] 목록 조회 실패:', error);
+    listCaches.set(cacheKey, { at: now, rows, source: 'fallback', error: message });
+    console.error(`[sheet:${cacheKey}] 목록 조회 실패:`, error);
     return rows;
   }
 }

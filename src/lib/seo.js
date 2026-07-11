@@ -29,11 +29,23 @@ const getSiteDescription = (site = {}) =>
 
 const getPhone = (site = {}) =>
   cleanText(site.phone) ||
-  '010-8183-4252';
+  '010-2175-4252';
 
 const getAddress = (site = {}) =>
   cleanText(site.address) ||
   '서울특별시 강남구 영동대로 621, 621빌딩 11층';
+
+const getBusinessNumber = (site = {}) =>
+  cleanText(site.businessNumber) ||
+  '754-87-03255';
+
+const getEmail = (site = {}) =>
+  cleanText(site.email) ||
+  'contact@yoonbitlawfirm.com';
+
+const getResponsibleAttorney = (site = {}) =>
+  cleanText(site.responsibleAttorney) ||
+  '윤수빈 변호사';
 
 const uniqueKeywords = (values = []) =>
   [...new Set(values.map((value) => cleanText(value)).filter(Boolean))];
@@ -53,9 +65,14 @@ export function buildCaseSeo(row = {}, site = {}, url) {
     cleanText(row.slug) ||
     name;
 
-  const title =
-    (site.isLegalBrand ? cleanText(row.seoTitle) : '') ||
-    `${name} 피해 대응 및 회복 절차 | ${getSiteName(site)}`;
+  const rawSeoTitle = site.isLegalBrand ? cleanText(row.seoTitle) : '';
+  const siteName = getSiteName(site);
+  const titleBase = rawSeoTitle
+    ? rawSeoTitle.replace(/\s*[|｜ㅣ]\s*법무법인\s*윤빛.*$/i, '').trim()
+    : `${name} 피해 대응 및 회복 절차`;
+  const title = rawSeoTitle.includes(siteName)
+    ? rawSeoTitle
+    : `${titleBase || `${name} 피해 대응 및 회복 절차`} | ${siteName}`;
 
   const description =
     cleanText(row.seoDescription) ||
@@ -176,6 +193,13 @@ export function homeJsonLdGraph(site = {}, url) {
           '@id': imageId,
         },
         telephone: phone,
+        email: getEmail(site),
+        taxID: getBusinessNumber(site),
+        employee: {
+          '@type': 'Person',
+          name: getResponsibleAttorney(site),
+          jobTitle: '광고책임변호사',
+        },
         address: {
           '@type': 'PostalAddress',
           streetAddress: getAddress(site),
@@ -242,6 +266,13 @@ export function homeJsonLdGraph(site = {}, url) {
           '@id': imageId,
         },
         telephone: phone,
+        email: getEmail(site),
+        taxID: getBusinessNumber(site),
+        employee: {
+          '@type': 'Person',
+          name: getResponsibleAttorney(site),
+          jobTitle: '광고책임변호사',
+        },
         areaServed: {
           '@type': 'Country',
           name: '대한민국',
@@ -272,8 +303,7 @@ export function caseJsonLdGraph(
   row = {},
   site = {},
   url,
-  seo,
-  faqs = []
+  seo
 ) {
   const origin = url.origin;
   const canonical = seo.canonical;
@@ -290,8 +320,6 @@ export function caseJsonLdGraph(
   const articleId = `${canonical}#article`;
   const breadcrumbId = `${canonical}#breadcrumb`;
   const imageId = `${canonical}#primaryimage`;
-  const faqId = `${canonical}#faq`;
-  const howToId = `${canonical}#howto`;
 
   const image = absoluteUrl(
     origin,
@@ -303,35 +331,6 @@ export function caseJsonLdGraph(
     '/images/yoonbit-logo-cutout.png'
   );
 
-  const suppliedFaqs = Array.isArray(faqs)
-    ? faqs
-    : [];
-
-  const fallbackFaqs = [
-    [row.faq1Q, row.faq1A],
-    [row.faq2Q, row.faq2A],
-    [row.faq3Q, row.faq3A],
-  ];
-
-  const faqRows = (
-    suppliedFaqs.length
-      ? suppliedFaqs
-      : fallbackFaqs
-  )
-    .map((item) => {
-      if (Array.isArray(item)) {
-        return [
-          cleanText(item[0]),
-          cleanText(item[1]),
-        ];
-      }
-
-      return [
-        cleanText(item?.question || item?.q),
-        cleanText(item?.answer || item?.a),
-      ];
-    })
-    .filter(([question, answer]) => question && answer);
 
   const graph = [
     {
@@ -341,6 +340,13 @@ export function caseJsonLdGraph(
       legalName: brandName,
       url: origin,
       telephone: phone,
+      email: getEmail(site),
+      taxID: getBusinessNumber(site),
+      employee: {
+        '@type': 'Person',
+        name: getResponsibleAttorney(site),
+        jobTitle: '광고책임변호사',
+      },
       logo: {
         '@type': 'ImageObject',
         url: logo,
@@ -464,6 +470,13 @@ export function caseJsonLdGraph(
       url: origin,
       description: getSiteDescription(site),
       telephone: phone,
+      email: getEmail(site),
+      taxID: getBusinessNumber(site),
+      employee: {
+        '@type': 'Person',
+        name: getResponsibleAttorney(site),
+        jobTitle: '광고책임변호사',
+      },
       areaServed: {
         '@type': 'Country',
         name: '대한민국',
@@ -482,64 +495,8 @@ export function caseJsonLdGraph(
         addressCountry: 'KR',
       },
     },
-    {
-      '@type': 'HowTo',
-      '@id': howToId,
-      name:
-        `${seo.name} 피해 의심 시 증거 보존과 초기 대응 방법`,
-      description:
-        `${seo.name} 피해가 의심될 때 추가 입금을 중단하고 입금·대화·사이트 자료를 보존하는 순서입니다.`,
-      totalTime: 'PT5M',
-      step: [
-        {
-          '@type': 'HowToStep',
-          position: 1,
-          name: '추가 입금 중단',
-          text:
-            '세금, 보증금, 인증비, 수수료 등 어떤 명목이든 추가 송금을 우선 중단합니다.',
-        },
-        {
-          '@type': 'HowToStep',
-          position: 2,
-          name: '입금 자료 보존',
-          text:
-            '이체확인증, 계좌번호, 예금주, 지갑주소와 송금 일시를 저장합니다.',
-        },
-        {
-          '@type': 'HowToStep',
-          position: 3,
-          name: '대화와 사이트 자료 저장',
-          text:
-            '메신저 대화, 담당자 프로필, 사이트 주소, 출금 제한 화면을 캡처합니다.',
-        },
-        {
-          '@type': 'HowToStep',
-          position: 4,
-          name: '법적 대응 가능성 검토',
-          text:
-            '남아 있는 자료를 기준으로 형사 고소, 지급정지, 가압류와 손해배상 가능성을 검토합니다.',
-        },
-      ],
-    },
   ];
 
-  // 실제 질문과 답변이 있을 때만 FAQPage를 추가합니다.
-  if (faqRows.length > 0) {
-    graph.push({
-      '@type': 'FAQPage',
-      '@id': faqId,
-      mainEntity: faqRows.map(
-        ([question, answer]) => ({
-          '@type': 'Question',
-          name: question,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: answer,
-          },
-        })
-      ),
-    });
-  }
 
   return {
     '@context': 'https://schema.org',

@@ -1,1 +1,10 @@
-2026-07-11 routing-floating-seo-v2 build-verified
+2026-07-11 FINAL V4 COMPLETE
+
+- 8개 사이트 공통 리커버리 레이아웃
+- 8개 고유 컬러 테마
+- 메인 발사대 고정 플로팅 제거
+- /scam 상세에만 3버튼 고정 플로팅
+- 전체 사업자 정보 및 법적 고지 페이지
+- 개인정보 수집·이용 동의 고지
+- 도메인별 SEO/구조화 데이터/사이트맵
+- Apps Script 기본 프로필 yb-recover로 수정

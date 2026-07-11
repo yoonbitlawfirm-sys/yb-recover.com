@@ -1,0 +1,26 @@
+법무법인 윤빛 8개 사이트 최종완성본 검증 결과
+버전: 2026-07-11 FINAL V4 COMPLETE
+
+[검증 결과]
+- npm ci: PASS
+- npm run build: PASS
+- npm audit: 취약점 0건
+- 8개 도메인 런타임 자동 검증: 176/176 PASS
+
+[요청사항 반영]
+- 8개 사이트 모두 yb-recover 디자인 구조 공통 적용
+- 8개 사이트 컬러를 진홍·오렌지·골드·그린·시안·블루·인디고·퍼플로 분리
+- 메인 발사대(/) 하단 고정 플로팅 완전 제거
+- 상세 페이지(/scam/키워드)에만 전화 상담·카카오 상담·상담 신청 고정 플로팅 적용
+- 검색 시 현재 접속한 동일 도메인의 /scam/키워드로 이동
+- 법무법인 윤빛 | 사이트별 서비스명 표시
+- 광고책임변호사 윤수빈 변호사, 사업자등록번호 754-87-03255, 주소 11층 표시
+- 개인정보처리방침·이용약관·이메일무단수집거부·면책·광고 고지 적용
+- 개인정보 수집·이용 안내와 필수 동의 검증 적용
+- 도메인별 title·description·canonical·Open Graph·Twitter·JSON-LD·robots·sitemap 적용
+- Google Apps Script 8개 도메인 프로필 및 yb-recover 기본값 적용
+
+[중요]
+- .env 및 Vercel 환경변수는 ZIP에 실제 비밀값을 넣지 않았습니다.
+- SHEET_JSON_URL, RESEND_API_KEY 등은 기존 Vercel 환경변수를 유지하거나 .env.example 기준으로 설정하십시오.
+- google-apps-script/Code.gs는 Google Apps Script에 별도로 덮어쓰고 새 버전으로 재배포해야 합니다.

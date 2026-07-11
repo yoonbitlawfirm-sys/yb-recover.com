@@ -1,11 +1,259 @@
 ---
-const { site } = Astro.props;
+const { site = {}, compact = false } = Astro.props;
+const year = new Date().getFullYear();
+const links = site.legalLinks || {
+  privacy: '/privacy',
+  terms: '/terms',
+  emailPolicy: '/email-policy',
+  legalNotice: '/legal-notice'
+};
 ---
-<footer class="yb-footer">
-  <div class="yb-inner">
-    <p><strong>{site.brandName}</strong> · {site.siteName}</p>
-    <p>대표전화: <a href={site.telLink}>{site.phone}</a> · 이메일: contact@yoonbitlawfirm.com</p>
-    <p>본 페이지는 금융사기 피해 정황 안내와 법률상담 접수를 위한 페이지입니다. 사건별 결과는 사실관계와 증거에 따라 달라질 수 있습니다.</p>
-    <p>© {new Date().getFullYear()} {site.brandName}. All rights reserved.</p>
+
+<footer class:list={["yb-legal-footer", { "yb-legal-footer--compact": compact }]}>
+  <div class="yb-legal-footer__inner">
+    <div class="yb-legal-footer__head">
+      <div>
+        <p class="yb-legal-footer__title">
+          <strong>{site.operatorName || '법무법인 윤빛'}</strong>
+          <span aria-hidden="true">|</span>
+          <b>{site.shortName || '금융사기 피해회복센터'}</b>
+        </p>
+        <p class="yb-legal-footer__sub">금융사기 피해 정황 안내 및 법률상담 접수</p>
+      </div>
+
+      <nav class="yb-legal-footer__links" aria-label="법적 고지">
+        <a href={links.privacy}>개인정보처리방침</a>
+        <a href={links.terms}>이용약관</a>
+        <a href={links.emailPolicy}>이메일무단수집거부</a>
+        <a href={links.legalNotice}>면책·광고 고지</a>
+      </nav>
+    </div>
+
+    <div class="yb-legal-footer__business" aria-label="사업자 정보">
+      <p><strong>운영 주체</strong><span>{site.operatorName || '법무법인 윤빛'}</span></p>
+      <p><strong>광고책임변호사</strong><span>{site.responsibleAttorney || '윤수빈 변호사'}</span></p>
+      <p><strong>사업자등록번호</strong><span>{site.businessNumber || '754-87-03255'}</span></p>
+      <p class="wide"><strong>주소</strong><span>{site.address || '서울특별시 강남구 영동대로 621, 621빌딩 11층'}</span></p>
+      <p><strong>대표전화</strong><a href={site.telLink || 'tel:01021754252'}>{site.phone || '010-2175-4252'}</a></p>
+      <p><strong>이메일</strong><a href={`mailto:${site.email || 'contact@yoonbitlawfirm.com'}`}>{site.email || 'contact@yoonbitlawfirm.com'}</a></p>
+    </div>
+
+    <div class="yb-legal-footer__notice">
+      <p>본 웹사이트의 내용은 일반적인 피해 정황 및 절차 안내이며, 개별 사건에 대한 구체적인 법률의견이나 결과 보장을 의미하지 않습니다.</p>
+      <p>상담 내용과 사건 결과는 사실관계, 증거자료, 상대방 특정 여부 및 관계기관의 판단에 따라 달라질 수 있습니다.</p>
+    </div>
+
+    <p class="yb-legal-footer__copy">© {year} {site.operatorName || '법무법인 윤빛'}. All rights reserved.</p>
   </div>
 </footer>
+
+<style>
+  .yb-legal-footer {
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 44%),
+      var(--yb-bg-deep);
+    color: var(--yb-text);
+    padding: 54px 22px 58px;
+  }
+
+  .yb-legal-footer__inner {
+    width: min(1120px, 100%);
+    margin: 0 auto;
+  }
+
+  .yb-legal-footer__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    padding-bottom: 27px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .yb-legal-footer__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: clamp(17px, 2vw, 22px);
+    line-height: 1.35;
+    letter-spacing: -0.04em;
+  }
+
+  .yb-legal-footer__title strong {
+    font-weight: 800;
+    color: #fff;
+  }
+
+  .yb-legal-footer__title span {
+    color: var(--yb-accent-2);
+    font-weight: 300;
+  }
+
+  .yb-legal-footer__title b {
+    font-weight: 620;
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .yb-legal-footer__sub {
+    margin: 8px 0 0;
+    color: var(--yb-muted);
+    font-size: 13px;
+    line-height: 1.7;
+    letter-spacing: -0.025em;
+  }
+
+  .yb-legal-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px 18px;
+    max-width: 500px;
+  }
+
+  .yb-legal-footer__links a {
+    position: relative;
+    color: rgba(255, 255, 255, 0.70);
+    font-size: 13px;
+    line-height: 1.6;
+    letter-spacing: -0.025em;
+  }
+
+  .yb-legal-footer__links a:hover,
+  .yb-legal-footer__links a:focus-visible {
+    color: var(--yb-accent-2);
+  }
+
+  .yb-legal-footer__links a:focus-visible {
+    outline: 2px solid var(--yb-accent-2);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  .yb-legal-footer__business {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px 28px;
+    padding: 27px 0 22px;
+  }
+
+  .yb-legal-footer__business p {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.68);
+    font-size: 13px;
+    line-height: 1.75;
+    letter-spacing: -0.025em;
+  }
+
+  .yb-legal-footer__business p.wide {
+    grid-column: span 2;
+  }
+
+  .yb-legal-footer__business strong {
+    flex: 0 0 auto;
+    color: rgba(255, 255, 255, 0.92);
+    font-weight: 700;
+  }
+
+  .yb-legal-footer__business span,
+  .yb-legal-footer__business a {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .yb-legal-footer__business a:hover,
+  .yb-legal-footer__business a:focus-visible {
+    color: var(--yb-accent-2);
+  }
+
+  .yb-legal-footer__notice {
+    display: grid;
+    gap: 4px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .yb-legal-footer__notice p,
+  .yb-legal-footer__copy {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.43);
+    font-size: 12px;
+    line-height: 1.75;
+    letter-spacing: -0.02em;
+  }
+
+  .yb-legal-footer__copy {
+    margin-top: 19px;
+  }
+
+  .yb-legal-footer--compact {
+    padding-top: 42px;
+  }
+
+  @media (max-width: 860px) {
+    .yb-legal-footer__head {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .yb-legal-footer__links {
+      justify-content: flex-start;
+    }
+
+    .yb-legal-footer__business {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 580px) {
+    .yb-legal-footer {
+      padding: 40px 18px 44px;
+    }
+
+    .yb-legal-footer__head {
+      padding-bottom: 22px;
+    }
+
+    .yb-legal-footer__title {
+      gap: 6px;
+      font-size: 16px;
+    }
+
+    .yb-legal-footer__links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+      gap: 10px 16px;
+    }
+
+    .yb-legal-footer__links a {
+      font-size: 12.5px;
+    }
+
+    .yb-legal-footer__business {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 23px 0 19px;
+    }
+
+    .yb-legal-footer__business p.wide {
+      grid-column: auto;
+    }
+
+    .yb-legal-footer__business p {
+      display: grid;
+      grid-template-columns: 104px minmax(0, 1fr);
+      gap: 6px;
+      font-size: 12.5px;
+      line-height: 1.65;
+    }
+  }
+</style>

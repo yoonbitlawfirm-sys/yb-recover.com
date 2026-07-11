@@ -1,0 +1,944 @@
+{
+  "version": "2026-07-11 FINAL V4 COMPLETE",
+  "passed": true,
+  "summary": {
+    "total": 176,
+    "passed": 176,
+    "failed": 0,
+    "sites": 8
+  },
+  "static": [
+    {
+      "name": "8개 도메인 프로필",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "8개 고유 테마 컬러",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "검색 상대경로 사용",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "yb-response 절대 상세주소 미사용",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "메인에서 FloatingCTA 미사용",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "상세에서 FloatingCTA 사용",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "사업자등록번호 포함",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "광고책임변호사 포함",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "주소 11층 포함",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "법적 고지 4종 페이지",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Apps Script 8개 프로필",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "Apps Script 기본값 recover",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "개인정보 필수동의",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "상세 3개 플로팅 CTA",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "runtime": [
+    {
+      "name": "상담 API 개인정보 동의 검증",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "name": "존재하지 않는 상세 404",
+      "passed": true,
+      "detail": ""
+    }
+  ],
+  "sites": [
+    {
+      "host": "yb-recover.com",
+      "passed": true,
+      "tests": [
+        {
+          "name": "home 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "privacy 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home 고정플로팅 없음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 고정플로팅 있음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail CTA 3종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "사업자 정보",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "법적 링크 4종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "robots host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "sitemap host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "빌드 헤더",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "상세 버전 헤더",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "host": "yb-response.com",
+      "passed": true,
+      "tests": [
+        {
+          "name": "home 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "privacy 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home 고정플로팅 없음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 고정플로팅 있음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail CTA 3종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "사업자 정보",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "법적 링크 4종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "robots host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "sitemap host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "빌드 헤더",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "상세 버전 헤더",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "host": "yb-alert.com",
+      "passed": true,
+      "tests": [
+        {
+          "name": "home 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "privacy 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home 고정플로팅 없음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 고정플로팅 있음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail CTA 3종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "사업자 정보",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "법적 링크 4종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "robots host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "sitemap host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "빌드 헤더",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "상세 버전 헤더",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "host": "yb-check.com",
+      "passed": true,
+      "tests": [
+        {
+          "name": "home 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "privacy 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home 고정플로팅 없음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 고정플로팅 있음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail CTA 3종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "사업자 정보",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "법적 링크 4종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "robots host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "sitemap host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "빌드 헤더",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "상세 버전 헤더",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "host": "yb-case.com",
+      "passed": true,
+      "tests": [
+        {
+          "name": "home 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "privacy 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home 고정플로팅 없음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 고정플로팅 있음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail CTA 3종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "사업자 정보",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "법적 링크 4종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "robots host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "sitemap host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "빌드 헤더",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "상세 버전 헤더",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "host": "yb-safe.com",
+      "passed": true,
+      "tests": [
+        {
+          "name": "home 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "privacy 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home 고정플로팅 없음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 고정플로팅 있음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail CTA 3종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "사업자 정보",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "법적 링크 4종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "robots host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "sitemap host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "빌드 헤더",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "상세 버전 헤더",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "host": "yb-help.com",
+      "passed": true,
+      "tests": [
+        {
+          "name": "home 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "privacy 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home 고정플로팅 없음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 고정플로팅 있음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail CTA 3종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "사업자 정보",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "법적 링크 4종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "robots host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "sitemap host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "빌드 헤더",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "상세 버전 헤더",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "host": "yb-watch.co.kr",
+      "passed": true,
+      "tests": [
+        {
+          "name": "home 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "privacy 200",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 테마 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 home",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "도메인 서비스명 detail",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home 고정플로팅 없음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail 고정플로팅 있음",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail CTA 3종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "사업자 정보",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "법적 링크 4종",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail canonical",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "home SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "detail SEO",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "robots host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "sitemap host",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "빌드 헤더",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "상세 버전 헤더",
+          "passed": true,
+          "detail": ""
+        }
+      ]
+    }
+  ]
+}
