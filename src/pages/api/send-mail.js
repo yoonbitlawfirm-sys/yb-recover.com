@@ -49,8 +49,8 @@ export async function POST({ request }) {
     }
 
     const RESEND_API_KEY = import.meta.env.RESEND_API_KEY;
-    const to = import.meta.env.CONSULT_TO_EMAIL || 'yoonbitlawfirm@gmail.com';
-    const from = import.meta.env.CONSULT_FROM_EMAIL || 'YOONBIT <onboarding@resend.dev>';
+    const to = 'yoonbitlawfirm@gmail.com';
+    const from = 'YOONBIT <onboarding@resend.dev>';
 
     if (!RESEND_API_KEY) {
       if (import.meta.env.DEV) {
